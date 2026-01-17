@@ -1,24 +1,20 @@
 print("brain.py loaded")
 
-def process_input(text: str) -> str:
-    """
-    Core brain logic.
-    This will later expand into intents, memory, reminders, etc.
-    """
-    text = text.lower().strip()
+from handlers import greet, time_now, exit_reply, unknown
 
-    if text in ["hi", "hello", "hey"]:
-        return "Hello! How can I help you?"
+def process_input(text: str) -> dict:
+    t = (text or "").lower().strip()
 
-    elif "time" in text:
-        from datetime import datetime
-        return f"The current time is {datetime.now().strftime('%H:%M')}"
+    if t in ["hi", "hello", "नमस्ते"]:
+        return {"reply": greet(), "action": None}
 
-    elif text in ["exit", "quit", "bye"]:
-        return "__EXIT__"
+    if "time" in t or "समय" in t:
+        return {"reply": time_now(), "action": None}
 
-    else:
-        return "I understood your input, but this feature is not implemented yet."
+    if t in ["exit", "quit", "bye", "बन्द", "रोक"]:
+        return {"reply": exit_reply(), "action": "exit"}
+
+    return {"reply": unknown(), "action": None}
 
 
 def main():
@@ -27,13 +23,12 @@ def main():
 
     while True:
         user_input = input("User: ")
-        response = process_input(user_input)
+        result = process_input(user_input)
 
-        if response == "__EXIT__":
-            print("Vaani: Goodbye!")
+        print("Vaani:", result["reply"])
+
+        if result["action"] == "exit":
             break
-
-        print("Vaani:", response)
 
 
 if __name__ == "__main__":
