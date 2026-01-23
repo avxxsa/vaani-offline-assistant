@@ -1,27 +1,22 @@
-import re
+def detect_intent(text: str) -> str:
+    text = text.lower().strip()
 
-def parse_intent(text: str):
-    text = text.lower()
-
-    # EXIT
-    if text in ["exit", "quit", "stop", "bye bye"]:
-        return "EXIT", {}
-
-    # REMINDER
-    if "remind" in text:
-        task_match = re.search(r"remind me to (.+?) at", text)
-        time_match = re.search(r"at (.+)", text)
-
-        task = task_match.group(1) if task_match else None
-        time = time_match.group(1) if time_match else None
-
-        return "SET_REMINDER", {
-            "task": task,
-            "time": time
-        }
-
-    # GREETING
     if text in ["hi", "hello", "hey"]:
-        return "GREETING", {}
+        return "greet"
 
-    return "UNKNOWN", {}
+    if "time" in text:
+        return "time"
+
+    if text in ["exit", "quit", "bye"]:
+        return "exit"
+
+    if "remind" in text:
+        return "reminder"
+
+    if "todo" in text:
+        return "todo"
+
+    if "journal" in text:
+        return "journal"
+
+    return "unknown"

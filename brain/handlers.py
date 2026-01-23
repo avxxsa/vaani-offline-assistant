@@ -1,13 +1,22 @@
 from datetime import datetime
 
-def greet():
-    return "नमस्ते। म वाणी हुँ।"
+def handle_greet():
+    return "Hello! How can I help you?"
 
-def time_now():
-    return f"अहिले समय {datetime.now().strftime('%H:%M')} हो।"
+def handle_time():
+    return f"The current time is {datetime.now().strftime('%H:%M')}"
 
-def exit_reply():
-    return "ठिक छ। फेरि भेटौँला।"
+def handle_exit():
+    return "__EXIT__"
 
-def unknown():
-    return "म बुझ्दैछु, तर यो सुविधा अहिले तयार छैन।"
+def handle_reminder(text):
+    return "Reminder noted. (Feature coming soon)"
+
+def handle_todo(text):
+    return "To-do noted. (Feature coming soon)"
+
+def handle_journal(text):
+    return "Journal entry saved. (Placeholder)"
+
+def handle_unknown():
+    return "I heard you, but I don't know how to handle that yet."
