@@ -1,46 +1,23 @@
-import numpy as np
-from audio_input import *
-from audio_processing import *
-from speech_to_text import *
-from text_to_speech import *
-from config import sample_rate, channels, frames_per_buffer, noise_profile_sec
+from brain.brain import process_text
 
 def main():
-    stream = get_mic_stream()
-    stt = SpeechToText()
-    tts = TextToSpeech()
-
-    noise_frames = []
-    num_frames = int((noise_profile_sec * sample_rate) / frames_per_buffer)
-
-    for i in range(num_frames):
-        data = stream.read(frames_per_buffer, exception_on_overflow=False)
-        frame = np.frombuffer(data, dtype=np.int16).astype(np.float32)
-        noise_frames.append(frame)
-
-    noise_sample = np.concatenate(noise_frames)
-
-    print("Vaani is listening...\n")
+    print("Vaani (Text Mode)")
+    print("Type something. Type 'exit' to quit.\n")
 
     while True:
-        data=stream.read(frames_per_buffer, exception_on_overflow=False)
-        audio=np.frombuffer(data, dtype=np.int16).astype(np.float32)
+        user_input = input("You: ").strip()
 
-        audio=spectral_gating(audio, noise_sample)
-        audio=bandpass_filter(audio)
-        audio=normalize_audio(audio)
+        if not user_input:
+            continue
 
-        pcm=(audio*32767).astype(np.int16)
-        text=stt.listen(pcm.tobytes())
+        response = process_text(user_input)
 
-        if text:
-            print("User:", text)
+        if response == "__EXIT__":
+            print("Vaani: Goodbye")
+            break
 
-            if text.lower() in ["exit", "quit", "stop", "bye bye"]:
-                tts.speak("ByeBye.\nTakecare.\nSeeya.")
-                break
+        print("Vaani:", response)
 
-            tts.speak(text)
 
 if __name__ == "__main__":
     main()
