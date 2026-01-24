@@ -1,36 +1,34 @@
-from brain.intent_parser import detect_intent
-from brain.handlers import (
-    handle_greet,
-    handle_time,
-    handle_exit,
-    handle_reminder,
-    handle_todo,
-    handle_journal,
-    handle_unknown
-)
+from brain.memory import add_todo, get_todos, add_journal
+from datetime import datetime
 
-print("brain.py loaded")
+def process_text(text):
+    text = text.lower()
 
-def process_text(text: str) -> str:
-    intent = detect_intent(text)
+    # EXIT
+    if text in ["exit", "quit", "bye"]:
+        return "__EXIT__"
 
-    if intent == "greet":
-        return handle_greet()
+    # TODO
+    if "remind me to" in text or "add task" in text:
+        task = text.replace("remind me to", "").replace("add task", "").strip()
+        add_todo(task)
+        return f"Got it. I saved your task: {task}"
 
-    elif intent == "time":
-        return handle_time()
+    if "show my tasks" in text or "what are my tasks" in text:
+        todos = get_todos()
+        if not todos:
+            return "You have no tasks."
+        return "Your tasks:\n" + "\n".join(f"- {t}" for t in todos)
 
-    elif intent == "exit":
-        return handle_exit()
+    # JOURNAL
+    if "journal" in text or "today i" in text:
+        entry = f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - {text}"
+        add_journal(entry)
+        return "Journal entry saved."
 
-    elif intent == "reminder":
-        return handle_reminder(text)
+    # TIME
+    if "time" in text:
+        return datetime.now().strftime("Current time is %H:%M")
 
-    elif intent == "todo":
-        return handle_todo(text)
-
-    elif intent == "journal":
-        return handle_journal(text)
-
-    else:
-        return handle_unknown()
+    # FALLBACK
+    return "I understood you, but I don't know how to help with that yet."
