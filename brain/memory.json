@@ -4,10 +4,22 @@
     "finish assignment",
     "drink water",
     "drink water",
-    "buy milk"
+    "buy milk",
+    "assignment",
+    "assignment"
   ],
   "journal": [
     "today was stressful",
     "today was stressful"
+  ],
+  "reminders": [
+    {
+      "text": "drink water",
+      "time": 1769339700.563379
+    },
+    {
+      "text": "pani khana",
+      "time": "5 pm"
+    }
   ]
 }

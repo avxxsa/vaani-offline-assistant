@@ -1,39 +1,38 @@
 import re
-from datetime import datetime, timedelta
-
 
 def detect_intent(text: str):
-    text = text.lower().strip()
+    t = text.lower().strip()
 
-    # REMINDER: "remind me to study in 10 minutes"
-    match = re.search(r"remind me (.*) in (\d+) (minute|minutes|hour|hours)", text)
-    if match:
-        task = match.group(1)
-        num = int(match.group(2))
-        unit = match.group(3)
+    # ---------- REMINDER (English) ----------
+    m = re.search(r"remind me to (.+) at (.+)", t)
+    if m:
+        return "add_reminder", m.group(1), m.group(2)
 
-        delta = timedelta(minutes=num) if "minute" in unit else timedelta(hours=num)
-        return "reminder_relative", (task, delta)
+    # ---------- REMINDER (Nepali romanized) ----------
+    m = re.search(r"malai (.+) samjhau (.+)", t)
+    if m:
+        return "add_reminder", m.group(1), m.group(2)
 
-    if text.startswith("add task"):
-        return "add_todo", text.replace("add task", "").strip()
+    # ---------- TODO ----------
+    if t.startswith("add task"):
+        return "add_todo", t.replace("add task", "").strip(), None
 
-    if text.startswith("note"):
-        return "journal", text.replace("note", "").strip()
+    if "kam add" in t:
+        return "add_todo", t.replace("kam add", "").strip(), None
 
-    if "list tasks" in text:
-        return "list_todos", ""
+    # ---------- LIST TODOS ----------
+    if "list tasks" in t or "show tasks" in t or "mero task" in t:
+        return "list_todos", None, None
 
-    if "time" in text:
-        return "time", ""
+    # ---------- JOURNAL ----------
+    if t.startswith("note"):
+        return "journal", t.replace("note", "").strip(), None
 
-    if "date" in text:
-        return "date", ""
+    if t.startswith("lekha"):
+        return "journal", t.replace("lekha", "").strip(), None
 
-    if "exit" in text:
-        return "exit", ""
+    # ---------- GREETING ----------
+    if t in ["hello", "hi", "hey", "namaste"]:
+        return "greet", None, None
 
-    if text in ["hi", "hello"]:
-        return "greet", ""
-
-    return "unknown", text
+    return "unknown", None, None
