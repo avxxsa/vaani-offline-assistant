@@ -1,34 +1,59 @@
-from brain.memory import add_todo, get_todos, add_journal
+from brain.intents import detect_intent
+from brain.memory import add_todo, list_todos, add_journal, add_reminder, get_due_reminders
 from datetime import datetime
 
-def process_text(text):
-    text = text.lower()
 
-    # EXIT
-    if text in ["exit", "quit", "bye"]:
-        return "__EXIT__"
+WAKE_WORDS = ["vaani", "vani", "wani"]
 
-    # TODO
-    if "remind me to" in text or "add task" in text:
-        task = text.replace("remind me to", "").replace("add task", "").strip()
-        add_todo(task)
-        return f"Got it. I saved your task: {task}"
 
-    if "show my tasks" in text or "what are my tasks" in text:
-        todos = get_todos()
-        if not todos:
-            return "You have no tasks."
-        return "Your tasks:\n" + "\n".join(f"- {t}" for t in todos)
+def strip_wake_word(text: str) -> str:
+    for w in WAKE_WORDS:
+        if text.startswith(w):
+            return text[len(w):].strip()
+    return text
 
-    # JOURNAL
-    if "journal" in text or "today i" in text:
-        entry = f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - {text}"
-        add_journal(entry)
-        return "Journal entry saved."
 
-    # TIME
-    if "time" in text:
-        return datetime.now().strftime("Current time is %H:%M")
+def process_text(text: str) -> str:
+    text = text.lower().strip()
 
-    # FALLBACK
-    return "I understood you, but I don't know how to help with that yet."
+    if not any(text.startswith(w) for w in WAKE_WORDS):
+        return ""
+
+    text = strip_wake_word(text)
+
+    if not text:
+        return "Yes?"
+
+    intent, content = detect_intent(text)
+
+    if intent == "add_todo":
+        add_todo(content)
+        return f"Task added: {content}"
+
+    if intent == "list_todos":
+        todos = list_todos()
+        return "Your tasks are: " + ", ".join(todos) if todos else "No tasks."
+
+    if intent == "journal":
+        add_journal(content)
+        return "Saved to journal."
+
+    if intent == "reminder_relative":
+        task, delta = content
+        remind_time = datetime.now() + delta
+        add_reminder(task, remind_time)
+        return f"Reminder set for {task}"
+
+    if intent == "time":
+        return datetime.now().strftime("Time is %I:%M %p")
+
+    if intent == "date":
+        return datetime.now().strftime("Today is %B %d, %Y")
+
+    if intent == "exit":
+        return "__exit__"
+
+    if intent == "greet":
+        return "Hello! How can I help you?"
+
+    return "Sorry, I didn’t understand."

@@ -1,23 +1,65 @@
+import numpy as np
+import time
+
+from audio_input import get_mic_stream
+from vad_simple import frame_rms
+from stt_nepali_hf_local import NepaliSTT
+from tts_espeaking import speak_text
 from brain.brain import process_text
+from brain.memory import get_due_reminders
+from config import FRAMES_PER_BUFFER, END_SILENCE_SEC
 
-def main():
-    print("🧠 Vaani (Text Mode)")
-    print("Type something. Type 'exit' to quit.\n")
+print("Starting voice assistant...")
 
-    while True:
-        user_input = input("You: ").strip()
+stream = get_mic_stream()
+stt = NepaliSTT()
 
-        if not user_input:
-            continue
+buffer = []
+speaking = False
+silence_start = None
 
-        response = process_text(user_input)
+while True:
+    data = stream.read(FRAMES_PER_BUFFER, exception_on_overflow=False)
+    audio = np.frombuffer(data, dtype=np.int16)
 
-        if response == "__EXIT__":
-            print("Vaani: Goodbye 👋")
-            break
+    rms = frame_rms(audio)
 
-        print("Vaani:", response)
+    # CHECK REMINDERS
+    due = get_due_reminders()
+    for r in due:
+        print("⏰ Reminder:", r["text"])
+        speak_text("Reminder: " + r["text"])
 
+    if rms > 500:  # speech threshold
+        if not speaking:
+            print("🎤 Listening...")
+            speaking = True
+            buffer = []
+        buffer.append(audio)
+        silence_start = None
 
-if __name__ == "__main__":
-    main()
+    else:
+        if speaking:
+            if silence_start is None:
+                silence_start = time.time()
+            elif time.time() - silence_start > END_SILENCE_SEC:
+                print("🛑 Processing...")
+
+                utterance = np.concatenate(buffer)
+                text = stt.transcribe_int16(utterance)
+
+                print("You said:", text)
+
+                if text.strip():
+                    reply = process_text(text)
+
+                    if reply == "__exit__":
+                        speak_text("Goodbye")
+                        break
+
+                    if reply:
+                        print("Assistant:", reply)
+                        speak_text(reply)
+
+                speaking = False
+                buffer = []
