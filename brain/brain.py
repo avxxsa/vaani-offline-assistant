@@ -1,35 +1,36 @@
+from brain.intent_parser import detect_intent
+from brain.handlers import (
+    handle_greet,
+    handle_time,
+    handle_exit,
+    handle_reminder,
+    handle_todo,
+    handle_journal,
+    handle_unknown
+)
+
 print("brain.py loaded")
 
-from handlers import greet, time_now, exit_reply, unknown
+def process_text(text: str) -> str:
+    intent = detect_intent(text)
 
-def process_input(text: str) -> dict:
-    t = (text or "").lower().strip()
+    if intent == "greet":
+        return handle_greet()
 
-    if t in ["hi", "hello", "नमस्ते"]:
-        return {"reply": greet(), "action": None}
+    elif intent == "time":
+        return handle_time()
 
-    if "time" in t or "समय" in t:
-        return {"reply": time_now(), "action": None}
+    elif intent == "exit":
+        return handle_exit()
 
-    if t in ["exit", "quit", "bye", "बन्द", "रोक"]:
-        return {"reply": exit_reply(), "action": "exit"}
+    elif intent == "reminder":
+        return handle_reminder(text)
 
-    return {"reply": unknown(), "action": None}
+    elif intent == "todo":
+        return handle_todo(text)
 
+    elif intent == "journal":
+        return handle_journal(text)
 
-def main():
-    print("Vaani Brain is running (text-only mode)")
-    print("Type 'exit' to stop\n")
-
-    while True:
-        user_input = input("User: ")
-        result = process_input(user_input)
-
-        print("Vaani:", result["reply"])
-
-        if result["action"] == "exit":
-            break
-
-
-if __name__ == "__main__":
-    main()
+    else:
+        return handle_unknown()
