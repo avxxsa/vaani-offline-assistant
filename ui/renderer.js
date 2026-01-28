@@ -3,20 +3,35 @@ console.log("Renderer loaded");
 const chatMessages = document.getElementById("chatMessages");
 const recentList = document.getElementById("recentList");
 const newChatBtn = document.getElementById("newChatBtn");
+const voiceWave = document.getElementById("voiceWave");
 
 let chats = [];
 let currentChatId = null;
-let listeningBubble = null;
+
+/* ───────── Mic waveform state ───────── */
+let audioContext = null;
+let analyser = null;
+let micSource = null;
+let animationId = null;
+
+/* ───────── AUTO SCROLL HELPER ───────── */
+function scrollToBottom() {
+  setTimeout(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 0);
+}
 
 
+/* ───────── Chat helpers ───────── */
 function addBubble(sender, text) {
   const bubble = document.createElement("div");
   bubble.classList.add("chat-bubble", sender === "user" ? "user" : "ai");
   bubble.textContent = text;
 
   chatMessages.appendChild(bubble);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  scrollToBottom();
 }
+
 
 function storeMessage(sender, text) {
   const chat = chats.find(c => c.id === currentChatId);
@@ -30,57 +45,81 @@ function storeMessage(sender, text) {
   }
 }
 
-function showListeningBubble() {
-  if (listeningBubble) return;
-
-  listeningBubble = document.createElement("div");
-  listeningBubble.classList.add("chat-bubble", "user", "listening");
-
-  listeningBubble.innerHTML = `
-    <div class="wave">
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
-    <div class="wave-text">Listening…</div>
-  `;
-
-  chatMessages.appendChild(listeningBubble);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+/* ───────── Bottom wave controls ───────── */
+function showVoiceWave() {
+  if (!voiceWave) return;
+  voiceWave.classList.remove("hidden", "processing");
+  startMicWave();
 }
 
-function updateListeningBubble(text) {
-  if (!listeningBubble) return;
+function freezeVoiceWave() {
+  if (!voiceWave) return;
+  voiceWave.classList.add("processing");
+  stopMicWave();
+}
 
-  const label = listeningBubble.querySelector(".wave-text");
-  if (label) label.textContent = text;
+function hideVoiceWave() {
+  stopMicWave();
+  if (voiceWave) voiceWave.classList.add("hidden");
+}
 
-  if (text === "Processing…") {
-    listeningBubble.classList.add("processing");
+/* ───────── Real mic waveform ───────── */
+async function startMicWave() {
+  if (audioContext) return;
+
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  micSource = audioContext.createMediaStreamSource(stream);
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 256;
+
+  micSource.connect(analyser);
+
+  const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+  function animate() {
+    analyser.getByteFrequencyData(dataArray);
+
+    const bars = voiceWave.querySelectorAll(".wave span");
+    bars.forEach((bar, i) => {
+      const value = dataArray[i * 2] || 0;
+      bar.style.height = `${Math.max(6, value / 3)}px`;
+    });
+
+    animationId = requestAnimationFrame(animate);
   }
+
+  animate();
 }
 
-function removeListeningBubble() {
-  if (listeningBubble) {
-    listeningBubble.remove();
-    listeningBubble = null;
+function stopMicWave() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
   }
+
+  if (micSource?.mediaStream) {
+    micSource.mediaStream.getTracks().forEach(t => t.stop());
+  }
+
+  if (audioContext) audioContext.close();
+
+  audioContext = null;
+  analyser = null;
+  micSource = null;
 }
 
-
+/* ───────── Sidebar & chat ───────── */
 function renderChat() {
   chatMessages.innerHTML = "";
-
   const chat = chats.find(c => c.id === currentChatId);
   if (!chat) return;
 
-  chat.messages.forEach(m => {
-    const bubble = document.createElement("div");
-    bubble.classList.add("chat-bubble", m.sender === "user" ? "user" : "ai");
-    bubble.textContent = m.text;
-    chatMessages.appendChild(bubble);
-  });
-
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chat.messages.forEach(m => addBubble(m.sender, m.text));
+  scrollToBottom();
 }
+
 
 function renderSidebar() {
   recentList.innerHTML = "";
@@ -90,9 +129,7 @@ function renderSidebar() {
     item.className = "recent-item";
     item.innerHTML = `
       <div class="recent-dot"></div>
-      <div>
-        <div class="title">${chat.title}</div>
-      </div>
+      <div class="title">${chat.title}</div>
     `;
 
     item.onclick = () => {
@@ -105,58 +142,42 @@ function renderSidebar() {
 }
 
 function newChat() {
-  const chat = {
-    id: Date.now(),
-    title: "New Chat",
-    messages: []
-  };
-
+  const chat = { id: Date.now(), title: "New Chat", messages: [] };
   chats.unshift(chat);
   currentChatId = chat.id;
-
   renderSidebar();
   renderChat();
 }
 
+/* ───────── Python → UI bridge ───────── */
 window.vaani.onPythonMessage((raw) => {
-  const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
-
-  for (const line of lines) {
+  raw.split("\n").filter(Boolean).forEach(line => {
     try {
       const msg = JSON.parse(line);
 
-      // USER FINAL TEXT
+      if (msg.type === "status") {
+        if (msg.data === "listening") showVoiceWave();
+        if (msg.data === "processing") freezeVoiceWave();
+      }
+
       if (msg.type === "user") {
-        removeListeningBubble();
+        hideVoiceWave();
         addBubble("user", msg.data);
         storeMessage("user", msg.data);
       }
 
-      // ASSISTANT RESPONSE
       if (msg.type === "assistant") {
-        removeListeningBubble();
+        hideVoiceWave();
         addBubble("ai", msg.data);
         storeMessage("assistant", msg.data);
       }
 
-      // STATUS UPDATES
-      if (msg.type === "status") {
-        if (msg.data === "listening") {
-          showListeningBubble("Listening…");
-        }
-
-        if (msg.data === "processing") {
-          updateListeningBubble("Processing…");
-        }
-      }
-
-    } catch (e) {
+    } catch {
       console.log("Non-JSON:", line);
     }
-  }
+  });
 });
 
-
+/* ───────── Init ───────── */
 newChatBtn.addEventListener("click", newChat);
-
 newChat();
