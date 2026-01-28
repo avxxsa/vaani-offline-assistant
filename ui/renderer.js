@@ -30,20 +30,31 @@ function storeMessage(sender, text) {
   }
 }
 
-function showListeningBubble(text = "Listening…") {
+function showListeningBubble() {
   if (listeningBubble) return;
 
   listeningBubble = document.createElement("div");
   listeningBubble.classList.add("chat-bubble", "user", "listening");
-  listeningBubble.textContent = text;
+
+  listeningBubble.innerHTML = `
+    <div class="wave">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="wave-text">Listening…</div>
+  `;
 
   chatMessages.appendChild(listeningBubble);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function updateListeningBubble(text) {
-  if (listeningBubble) {
-    listeningBubble.textContent = text;
+  if (!listeningBubble) return;
+
+  const label = listeningBubble.querySelector(".wave-text");
+  if (label) label.textContent = text;
+
+  if (text === "Processing…") {
+    listeningBubble.classList.add("processing");
   }
 }
 
