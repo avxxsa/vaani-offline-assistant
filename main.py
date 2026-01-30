@@ -51,7 +51,21 @@ while True:
                 print("You said:", text)
 
                 if text.strip():
-                    reply = process_text(text)
+                    text = text.lower().strip()
+
+                    # WAKE WORD CHECK
+                    if not text.startswith("vaani"):
+                        print("Ignored (no wake word):", text)
+                        continue
+
+                    # remove wake word
+                    command = text.replace("vaani", "", 1).strip()
+
+                    if not command:
+                        speak_text("Yes?")
+                        continue
+
+                    reply = process_text(command)
 
                     if reply == "__exit__":
                         speak_text("Goodbye")
