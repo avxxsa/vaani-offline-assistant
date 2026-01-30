@@ -1,52 +1,49 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vaani</title>
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaani</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
 
-<!-- Bottom voice wave-->
-<div id="voiceWave" class="voice-wave hidden">
-  <div class="wave">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span>
-  </div>
-</div>
+<body>
 
-
-
-  <body>
-    <div class="app">
-     
-      <aside class="sidebar">
-        <button class="new-chat" id="newChatBtn">
-          <span class="plus">+</span>
-          <span>New Chat</span>
-        </button>
-
-        <div class="section-title">Recent</div>
-
-        <div class="recent-list" id="recentList">
-        
-        </div>
-      </aside>
-
-      
-      <main class="main">
-        <header class="topbar">
-          <div class="brand">Vaani</div>
-        </header>
-
-        
-        <section class="chat-area">
-          <div id="chatMessages" class="chat-messages"></div>
-        </section>
-      </main>
+  <!-- Bottom voice wave -->
+  <div id="voiceWave" class="voice-wave hidden">
+    <div class="wave">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
     </div>
 
-    <script src="./renderer.js"></script>
-  </body>
+    <div class="wave-text" id="waveText">Listening…</div>
+  </div>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <button class="new-chat" id="newChatBtn">
+        <span class="plus">+</span>
+        <span>New Chat</span>
+      </button>
+
+      <div class="section-title">Recent</div>
+      <div class="recent-list" id="recentList"></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="brand">Vaani</div>
+      </header>
+
+      <section class="chat-area">
+        <div id="chatMessages" class="chat-messages"></div>
+      </section>
+    </main>
+
+  </div>
+
+  <script src="./renderer.js"></script>
+</body>
 </html>

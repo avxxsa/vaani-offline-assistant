@@ -4,17 +4,19 @@ const chatMessages = document.getElementById("chatMessages");
 const recentList = document.getElementById("recentList");
 const newChatBtn = document.getElementById("newChatBtn");
 const voiceWave = document.getElementById("voiceWave");
+const waveText = document.getElementById("waveText");
+
 
 let chats = [];
 let currentChatId = null;
 
-/* ───────── Mic waveform state ───────── */
+//Mic waveform state
 let audioContext = null;
 let analyser = null;
 let micSource = null;
 let animationId = null;
 
-/* ───────── AUTO SCROLL HELPER ───────── */
+//auto scroll
 function scrollToBottom() {
   setTimeout(() => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -22,7 +24,7 @@ function scrollToBottom() {
 }
 
 
-/* ───────── Chat helpers ───────── */
+// Chat helpers 
 function addBubble(sender, text) {
   const bubble = document.createElement("div");
   bubble.classList.add("chat-bubble", sender === "user" ? "user" : "ai");
@@ -45,16 +47,18 @@ function storeMessage(sender, text) {
   }
 }
 
-/* ───────── Bottom wave controls ───────── */
+// Bottom wave controls 
 function showVoiceWave() {
   if (!voiceWave) return;
   voiceWave.classList.remove("hidden", "processing");
+  if (waveText) waveText.textContent = "Listening…";
   startMicWave();
 }
 
 function freezeVoiceWave() {
   if (!voiceWave) return;
   voiceWave.classList.add("processing");
+  if (waveText) waveText.textContent = "Processing…";
   stopMicWave();
 }
 
@@ -63,7 +67,7 @@ function hideVoiceWave() {
   if (voiceWave) voiceWave.classList.add("hidden");
 }
 
-/* ───────── Real mic waveform ───────── */
+// Real mic waveform 
 async function startMicWave() {
   if (audioContext) return;
 
@@ -110,7 +114,7 @@ function stopMicWave() {
   micSource = null;
 }
 
-/* ───────── Sidebar & chat ───────── */
+
 function renderChat() {
   chatMessages.innerHTML = "";
   const chat = chats.find(c => c.id === currentChatId);
@@ -120,13 +124,18 @@ function renderChat() {
   scrollToBottom();
 }
 
-
+// Sidebar
 function renderSidebar() {
   recentList.innerHTML = "";
 
   chats.forEach(chat => {
     const item = document.createElement("div");
     item.className = "recent-item";
+
+    if (chat.id === currentChatId) {
+      item.classList.add("active");
+    }
+
     item.innerHTML = `
       <div class="recent-dot"></div>
       <div class="title">${chat.title}</div>
@@ -134,12 +143,14 @@ function renderSidebar() {
 
     item.onclick = () => {
       currentChatId = chat.id;
+      renderSidebar();   //  important
       renderChat();
     };
 
     recentList.appendChild(item);
   });
 }
+
 
 function newChat() {
   const chat = { id: Date.now(), title: "New Chat", messages: [] };
@@ -149,7 +160,7 @@ function newChat() {
   renderChat();
 }
 
-/* ───────── Python → UI bridge ───────── */
+//python-UI 
 window.vaani.onPythonMessage((raw) => {
   raw.split("\n").filter(Boolean).forEach(line => {
     try {
@@ -178,6 +189,6 @@ window.vaani.onPythonMessage((raw) => {
   });
 });
 
-/* ───────── Init ───────── */
+// Init 
 newChatBtn.addEventListener("click", newChat);
 newChat();
