@@ -1,38 +1,53 @@
 import re
 
 def detect_intent(text: str):
-    t = text.lower().strip()
+    text = text.lower().strip()
 
-    # ---------- REMINDER (English) ----------
-    m = re.search(r"remind me to (.+) at (.+)", t)
+    # NAME SET
+    m = re.search(r"my name is (.+)", text)
     if m:
-        return "add_reminder", m.group(1), m.group(2)
+        return "set_name", m.group(1), None
 
-    # ---------- REMINDER (Nepali romanized) ----------
-    m = re.search(r"malai (.+) samjhau (.+)", t)
+    # ASK NAME
+    if "what is my name" in text:
+        return "get_name", "", None
+
+    # FACT
+    m = re.search(r"i am (.+)", text)
     if m:
-        return "add_reminder", m.group(1), m.group(2)
+        return "set_fact", m.group(1), None
 
-    # ---------- TODO ----------
-    if t.startswith("add task"):
-        return "add_todo", t.replace("add task", "").strip(), None
+    # TIME
+    if any(p in text for p in ["time", "kati baje", "ahile kati baje"]):
+        return "time", "", None
 
-    if "kam add" in t:
-        return "add_todo", t.replace("kam add", "").strip(), None
+    # DATE
+    if any(p in text for p in ["date", "today", "aaja ko date"]):
+        return "date", "", None
 
-    # ---------- LIST TODOS ----------
-    if "list tasks" in t or "show tasks" in t or "mero task" in t:
-        return "list_todos", None, None
+    # ADD TODO
+    if text.startswith("add task"):
+        task = text.replace("add task", "").strip()
+        return "add_todo", task, None
 
-    # ---------- JOURNAL ----------
-    if t.startswith("note"):
-        return "journal", t.replace("note", "").strip(), None
+    # LIST TODO
+    if "list tasks" in text or "show tasks" in text:
+        return "list_todos", "", None
 
-    if t.startswith("lekha"):
-        return "journal", t.replace("lekha", "").strip(), None
+    # JOURNAL
+    if text.startswith("note"):
+        note = text.replace("note", "").strip()
+        return "journal", note, None
 
-    # ---------- GREETING ----------
-    if t in ["hello", "hi", "hey", "namaste"]:
-        return "greet", None, None
+    # REMINDER (example)
+    match = re.search(r"remind me to (.+) at (.+)", text)
+    if match:
+        task = match.group(1)
+        time_info = match.group(2)
+        return "reminder", task, time_info
 
-    return "unknown", None, None
+    # GREET
+    if any(w in text for w in ["hello", "hi", "namaste"]):
+        return "greet", "", None
+
+    return "unknown", text, None

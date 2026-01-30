@@ -64,3 +64,14 @@ def get_due_reminders():
 
     save_memory(data)
     return due
+
+def set_profile(key, value):
+    data = load_memory()
+    if "profile" not in data:
+        data["profile"] = {}
+    data["profile"][key] = value
+    save_memory(data)
+
+def get_profile(key):
+    data = load_memory()
+    return data.get("profile", {}).get(key)

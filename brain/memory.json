@@ -6,6 +6,7 @@
     "drink water",
     "buy milk",
     "assignment",
+    "assignment",
     "assignment"
   ],
   "journal": [
@@ -20,6 +21,18 @@
     {
       "text": "pani khana",
       "time": "5 pm"
+    },
+    {
+      "text": "pani khana",
+      "time": "5 pm"
+    },
+    {
+      "text": "drink water",
+      "time": "6 pm"
     }
-  ]
+  ],
+  "profile": {
+    "name": "nabi",
+    "fact": "a cs student"
+  }
 }
