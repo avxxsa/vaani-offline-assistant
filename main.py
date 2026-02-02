@@ -138,7 +138,7 @@ def main():
         print("TTS initialized")
 
     except Exception as e:
-        print(f"✗ Initialization error: {e}")
+        print(f"Initialization error: {e}")
         import traceback
         traceback.print_exc()
         return
@@ -159,7 +159,7 @@ def main():
         while True:
             try:
                 iteration += 1
-                print(f"\n--- Turn {iteration} ---")
+                print(f"\n Speak ")
 
                 utterance = record_utterance(stream, threshold, noise_profile)
 
