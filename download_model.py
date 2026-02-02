@@ -9,8 +9,7 @@ print("Please wait, this may take several minutes...\n")
 try:
     path = snapshot_download(
         repo_id="anish-shilpakar/wav2vec2-nepali",
-        local_dir=MODEL_DIR,
-        local_dir_use_symlinks=False
+        local_dir=MODEL_DIR
     )
 
     print("MODEL DOWNLOADED SUCCESSFULLY!")
