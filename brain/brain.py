@@ -1,58 +1,90 @@
-from datetime import datetime
-from brain.memory import set_profile, get_profile
 from brain.intents import detect_intent
-from brain.memory import add_todo, list_todos, add_journal, add_reminder
+from brain.memory import add_todo, list_todos, add_journal, add_reminder, set_profile, get_profile
+import time
+from datetime import datetime, timedelta
+import re
+
+def parse_time_string(time_str: str):
+    now = datetime.now()
+    time_str = time_str.replace("pm", " pm").replace("am", " am")
+
+    # 5 pm / 5 am
+    m = re.search(r"(\d{1,2})\s*(am|pm)", time_str)
+    if m:
+        hour = int(m.group(1))
+        if m.group(2) == "pm" and hour != 12:
+            hour += 12
+        return now.replace(hour=hour, minute=0, second=0).timestamp()
+
+    # 5 baje
+    m = re.search(r"(\d{1,2})\s*baje", time_str)
+    if m:
+        hour = int(m.group(1))
+        return now.replace(hour=hour, minute=0, second=0).timestamp()
+
+    # fallback: 1 minute later
+    return time.time() + 60
 
 def process_text(text: str) -> str:
     intent, content, time_info = detect_intent(text)
-
-    if intent == "time":
-        now = datetime.now()
-        return f"It is {now.strftime('%I:%M %p')} now."
-
-    if intent == "date":
-        today = datetime.now()
-        return f"Today is {today.strftime('%B %d, %Y')}."
-
-    if intent == "add_reminder":
-        if not content or not time_info:
-            return "What should I remind you about and when?"
-        add_reminder(content, time_info)
-        return f"Okay, I will remind you to {content} at {time_info}"
+    data = None
 
     if intent == "add_todo":
-        if not content:
-            return "What task should I add?"
         add_todo(content)
         return f"Task added: {content}"
 
     if intent == "list_todos":
         todos = list_todos()
-        if not todos:
-            return "Your todo list is empty."
-        return "Your tasks are: " + ", ".join(todos)
+        return "Your tasks are: " + ", ".join(todos) if todos else "Todo list is empty."
 
     if intent == "journal":
-        if not content:
-            return "What should I note?"
         add_journal(content)
         return "Saved to your journal."
 
-    if intent == "greet":
-        return "Hello! How can I help you?"
-    
+    if intent == "set_reminder":
+        task, time_str = data
+        add_reminder(task, time_str)
+        if is_nepali(text):
+            return time_str + " बजे म तपाईंलाई " + task + " सम्झाउनेछु"
+        return "Okay, I will remind you to " + task + " at " + time_str
+
+
+    if intent == "get_time":
+        now = datetime.now().strftime("%H:%M")
+        if is_nepali(text):
+            return "अहिले समय " + now + " बजे हो"
+        return "Time is " + now
+
+    if intent == "get_date":
+        today = datetime.now().strftime("%Y-%m-%d")
+        if is_nepali(text):
+            return "आजको मिति " + today + " हो"
+        return "Today's date is " + today
+
     if intent == "set_name":
-        set_profile("name", content)
-        return f"Nice to meet you, {content}."
+        name = data
+        if is_nepali(text):
+            return "ठिक छ, म तपाईंलाई " + name + " भनेर बोलाउँछु"
+        return "Okay, I will call you " + name
 
     if intent == "get_name":
         name = get_profile("name")
-        if name:
-                return f"Your name is {name}."
-        return "I don't know your name yet."
+        return f"Your name is {name}" if name else "I don't know your name yet."
 
-    if intent == "set_fact":
-        set_profile("fact", content)
-        return f"Okay, I will remember that you are {content}."
+    if intent == "exit":
+        return "__exit__"
+
+    if intent == "greet":
+        if is_nepali(text):
+            return "नमस्ते! म तपाईंको सहायक हुँ।"
+        return "Hello! I am your assistant."
 
     return "Sorry, I didn't understand that."
+
+    if intent == "help":
+        if is_nepali(text):
+            return "तपाईं समय, मिति, रिमाइन्डर र नाम सोध्न सक्नुहुन्छ"
+    return "You can ask time, date, reminders and your name."
+
+def is_nepali(text):
+    return any("अ" <= c <= "ह" for c in text)

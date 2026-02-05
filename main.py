@@ -1,79 +1,28 @@
-import numpy as np
-import time
-
-from audio_input import get_mic_stream
-from vad_simple import frame_rms
-from stt_nepali_hf_local import NepaliSTT
-from tts_espeaking import speak_text
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.label import Label
 from brain.brain import process_text
-from brain.memory import get_due_reminders
-from config import FRAMES_PER_BUFFER, END_SILENCE_SEC
 
-print("Starting voice assistant...")
+class VaaniApp(App):
+    def build(self):
+        layout = BoxLayout(orientation='vertical')
 
-stream = get_mic_stream()
-stt = NepaliSTT()
+        self.input = TextInput(hint_text="Say something...")
+        self.output = Label(text="Response here")
 
-buffer = []
-speaking = False
-silence_start = None
+        btn = Button(text="Ask")
+        btn.bind(on_press=self.ask)
 
-while True:
-    data = stream.read(FRAMES_PER_BUFFER, exception_on_overflow=False)
-    audio = np.frombuffer(data, dtype=np.int16)
+        layout.add_widget(self.input)
+        layout.add_widget(btn)
+        layout.add_widget(self.output)
+        return layout
 
-    rms = frame_rms(audio)
+    def ask(self, instance):
+        text = self.input.text
+        response = process_text(text)
+        self.output.text = response
 
-    # CHECK REMINDERS
-    due = get_due_reminders()
-    for r in due:
-        print("⏰ Reminder:", r["text"])
-        speak_text("Reminder: " + r["text"])
-
-    if rms > 500:  # speech threshold
-        if not speaking:
-            print("🎤 Listening...")
-            speaking = True
-            buffer = []
-        buffer.append(audio)
-        silence_start = None
-
-    else:
-        if speaking:
-            if silence_start is None:
-                silence_start = time.time()
-            elif time.time() - silence_start > END_SILENCE_SEC:
-                print("🛑 Processing...")
-
-                utterance = np.concatenate(buffer)
-                text = stt.transcribe_int16(utterance)
-
-                print("You said:", text)
-
-                if text.strip():
-                    text = text.lower().strip()
-
-                    # WAKE WORD CHECK
-                    if not text.startswith("vaani"):
-                        print("Ignored (no wake word):", text)
-                        continue
-
-                    # remove wake word
-                    command = text.replace("vaani", "", 1).strip()
-
-                    if not command:
-                        speak_text("Yes?")
-                        continue
-
-                    reply = process_text(command)
-
-                    if reply == "__exit__":
-                        speak_text("Goodbye")
-                        break
-
-                    if reply:
-                        print("Assistant:", reply)
-                        speak_text(reply)
-
-                speaking = False
-                buffer = []
+VaaniApp().run()
