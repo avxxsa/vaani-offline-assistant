@@ -3,26 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vaani</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <header class="topbar">
+  <div class="brand">Vaani</div>
+
+  <div class="topbar-actions">
+  <button class="topbar-btn" id="openJournalBtn">Journal</button>
+  <button class="topbar-btn" id="openTodoBtn">To-Do</button>
+</div>
+
+</header>
+
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/chat.css">
+  <link rel="stylesheet" href="./styles/journal.css">
+  <link rel="stylesheet" href="./styles/reminder.css">
+  <link rel="stylesheet" href="./styles/to-do.css">
+
 </head>
 
 <body>
 
-  <!-- Bottom voice wave -->
-  <div id="voiceWave" class="voice-wave hidden">
-    <div class="wave">
-      <span></span><span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
-    </div>
-
-    <div class="wave-text" id="waveText">Listening…</div>
-  </div>
-
   <div class="app">
 
-    <aside class="sidebar">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
       <button class="new-chat" id="newChatBtn">
         <span class="plus">+</span>
         <span>New Chat</span>
@@ -32,18 +38,20 @@
       <div class="recent-list" id="recentList"></div>
     </aside>
 
+    <!-- Main -->
     <main class="main">
-      <header class="topbar">
-        <div class="brand">Vaani</div>
-      </header>
 
-      <section class="chat-area">
-        <div id="chatMessages" class="chat-messages"></div>
-      </section>
+      <!-- Dynamic page mount -->
+      <div id="app"></div>
     </main>
 
   </div>
 
   <script src="./renderer.js"></script>
 </body>
+
+<script src="./scripts/todo.js"></script>
+<script src="./scripts/journal.js"></script>
+
 </html>
+

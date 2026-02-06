@@ -1,5 +1,3 @@
-import re
-
 def detect_intent(text: str) -> str:
     text = text.lower().strip()
 

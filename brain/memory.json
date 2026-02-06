@@ -1,16 +1,9 @@
 {
   "todos": [
-    "buy milk",
-    "finish assignment",
-    "drink water",
-    "drink water",
-    "buy milk",
-    "assignment",
-    "assignment"
+    "study ai"
   ],
   "journal": [
-    "today was stressful",
-    "today was stressful"
-  ],
-  "reminders": []
+    "2026-01-24 13:26 - journal today",
+    "2026-01-24 13:26 - show my journal"
+  ]
 }
