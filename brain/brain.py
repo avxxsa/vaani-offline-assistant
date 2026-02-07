@@ -1,34 +1,34 @@
-from brain.memory import add_todo, get_todos, add_journal
-from datetime import datetime
+from brain.intents import detect_intent
+from brain.memory import add_todo, list_todos, add_journal, add_reminder
 
-def process_text(text):
-    text = text.lower()
+def process_text(text: str) -> str:
+    intent, content, time_info = detect_intent(text)
 
-    # EXIT
-    if text in ["exit", "quit", "bye"]:
-        return "__EXIT__"
+    if intent == "add_reminder":
+        if not content or not time_info:
+            return "What should I remind you about and when?"
+        add_reminder(content, time_info)
+        return f"Okay, I will remind you to {content} at {time_info}"
 
-    # TODO
-    if "remind me to" in text or "add task" in text:
-        task = text.replace("remind me to", "").replace("add task", "").strip()
-        add_todo(task)
-        return f"Got it. I saved your task: {task}"
+    if intent == "add_todo":
+        if not content:
+            return "What task should I add?"
+        add_todo(content)
+        return f"Task added: {content}"
 
-    if "show my tasks" in text or "what are my tasks" in text:
-        todos = get_todos()
+    if intent == "list_todos":
+        todos = list_todos()
         if not todos:
-            return "You have no tasks."
-        return "Your tasks:\n" + "\n".join(f"- {t}" for t in todos)
+            return "Your todo list is empty."
+        return "Your tasks are: " + ", ".join(todos)
 
-    # JOURNAL
-    if "journal" in text or "today i" in text:
-        entry = f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - {text}"
-        add_journal(entry)
-        return "Journal entry saved."
+    if intent == "journal":
+        if not content:
+            return "What should I note?"
+        add_journal(content)
+        return "Saved to your journal."
 
-    # TIME
-    if "time" in text:
-        return datetime.now().strftime("Current time is %H:%M")
+    if intent == "greet":
+        return "Hello! How can I help you?"
 
-    # FALLBACK
-    return "I understood you, but I don't know how to help with that yet."
+    return "Sorry, I didn't understand that."
