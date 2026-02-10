@@ -18,3 +18,6 @@ vosk-model*/
 # OS
 .DS_Store
 Thumbs.db
+
+# nodemodules
+node_modules/
