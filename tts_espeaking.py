@@ -159,3 +159,12 @@ class NepaliTTS:
 if __name__ == "__main__":
     tts = NepaliTTS()
     tts.speak("नमस्ते म वाणी हुँ म तपाईंलाई कसरी सहयोग गर्न सक्छु आज मौसम कस्तो छ धन्यवाद फेरि भेटौँला")
+import subprocess
+
+def speak_text(text: str):
+    print("🔊 Speaking:", text)
+    subprocess.run([
+        "espeak-ng",
+        "-v", "ne",
+        text
+    ])
