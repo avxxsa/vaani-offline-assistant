@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <header class="topbar">
+  <div class="brand">Vaani</div>
+
+  <div class="topbar-actions">
+  <button class="topbar-btn" id="openJournalBtn">Journal</button>
+  <button class="topbar-btn" id="openTodoBtn">To-Do</button>
+</div>
+
+</header>
+
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/chat.css">
+  <link rel="stylesheet" href="./styles/journal.css">
+  <link rel="stylesheet" href="./styles/reminder.css">
+  <link rel="stylesheet" href="./styles/to-do.css">
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <button class="new-chat" id="newChatBtn">
+        <span class="plus">+</span>
+        <span>New Chat</span>
+      </button>
+
+      <div class="section-title">Recent</div>
+      <div class="recent-list" id="recentList"></div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- Dynamic page mount -->
+      <div id="app"></div>
+    </main>
+
+  </div>
+
+  <script src="./renderer.js"></script>
+</body>
+
+<script src="./scripts/todo.js"></script>
+<script src="./scripts/journal.js"></script>
+
+</html>
+

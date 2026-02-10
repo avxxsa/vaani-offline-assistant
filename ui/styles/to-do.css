@@ -1,0 +1,76 @@
+.todo-page {
+  padding: 48px 40px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.todo-title {
+  text-align: center;
+  font-size: 28px;
+  letter-spacing: 6px;
+  margin-bottom: 48px;
+  color: #c4b5fd;
+  font-weight: 600;
+}
+
+.todo-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.todo-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(196, 181, 253, 0.6);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.line {
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 4px;
+  font-size: 14px;
+  color: #e9e7f5;
+  line-height: 1.6;
+}
+
+.todo-item {
+  cursor: pointer;
+  user-select: none;
+}
+
+.todo-item.completed .checkbox {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  position: relative;
+}
+
+.todo-item.completed .checkbox::after {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 12px;
+  left: 3px;
+  top: -1px;
+}
+
+.todo-item.completed .line {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
