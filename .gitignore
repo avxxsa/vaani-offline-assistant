@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -35,3 +36,8 @@ Thumbs.db
 !reminders.json
 !todos.json
 !journal.json
+=======
+__pycache__/
+*.pyc
+venv/
+>>>>>>> origin/avipsa/brain-layer

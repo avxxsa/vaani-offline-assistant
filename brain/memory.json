@@ -6,6 +6,7 @@
     "drink water",
     "buy milk",
     "assignment",
+    "assignment",
     "assignment"
   ],
   "journal": [
@@ -20,6 +21,38 @@
     {
       "text": "pani khana",
       "time": "5 pm"
+    },
+    {
+      "text": "pani khana",
+      "time": "5 pm"
+    },
+    {
+      "text": "drink water",
+      "time": "6 pm"
+    },
+    {
+      "text": "pani khana",
+      "time": "5 baje"
+    },
+    {
+      "text": "pani khana",
+      "time": 1769814900.910448
+    },
+    {
+      "text": "पानी खान",
+      "time": 1769790304.572793
+    },
+    {
+      "text": "pani khana",
+      "time": 1770224993.6490867
+    },
+    {
+      "text": "study",
+      "time": 1770225001.7381697
     }
-  ]
+  ],
+  "profile": {
+    "name": "avipsa",
+    "fact": "a cs student"
+  }
 }
