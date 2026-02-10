@@ -62,7 +62,7 @@ function loadPage(page) {
       waveText = document.getElementById("waveText");
 
       // Sidebar control
-       if (page === "chat") {
+      if (page === "chat") {
         sidebar?.classList.remove("hidden");
         appRoot?.classList.remove("clean-mode");
         renderChat();
@@ -71,24 +71,24 @@ function loadPage(page) {
         appRoot?.classList.add("clean-mode");
       }
 
-        if (page === "todo") {
-      sidebar?.classList.add("hidden");
-      window.renderTodos?.();
+      if (page === "todo") {
+        sidebar?.classList.add("hidden");
+        window.renderTodos?.();
 
-      // Load todo script dynamically
-      const script = document.createElement("script");
-      script.src = "./scripts/todo.js";
-      script.defer = true;
-      document.body.appendChild(script);
-    }
+        // Load todo script dynamically
+        const script = document.createElement("script");
+        script.src = "./scripts/todo.js";
+        script.defer = true;
+        document.body.appendChild(script);
+      }
       if (page === "journal") {
-       sidebar?.classList.add("hidden");
-       window.renderJournal?.();
-}
+        sidebar?.classList.add("hidden");
+        window.renderJournal?.();
+      }
 
     });
 
-    
+
 }
 
 //chat
@@ -219,39 +219,58 @@ function stopMicWave() {
 }
 
 //python-ui bridge
+//python-ui bridge
 window.vaani.onPythonMessage(raw => {
-  raw.split("\n").filter(Boolean).forEach(line => {
-    try {
-      const msg = JSON.parse(line);
+  try {
+    const msg = JSON.parse(raw);
+    const { type, data } = msg;
 
-      if (msg.type === "status") {
-        if (msg.data === "listening") showVoiceWave();
-        if (msg.data === "processing") freezeVoiceWave();
-        return;
-      }
+    console.log("Event:", type, data);
 
-      if (appMode === "chat") {
-        if (msg.type === "user") {
-          hideVoiceWave();
-          storeMessage("user", msg.data);
-          addBubble("user", msg.data);
-        }
-        if (msg.type === "assistant") {
-          hideVoiceWave();
-          storeMessage("assistant", msg.data);
-          addBubble("ai", msg.data);
-        }
-      }
+    // STATUS
+    if (type === "status") {
+      const state = data.state; // Idle, Listening, Processing, Speaking, Calibrating
 
-  /*  if(appMode === "journal" && msg.type === "user") {
+      if (state === "Listening") {
+        showVoiceWave();
+      } else if (state === "Processing" || state === "Speaking") {
+        freezeVoiceWave();
+        if (state === "Speaking" && waveText) waveText.textContent = "Speaking...";
+      } else {
         hideVoiceWave();
-        addJournalEntry(msg.data);
-      } */
-
-    } catch {
-      console.log("Non-JSON:", line);
+      }
+      return;
     }
-  });
+
+    // TRANSCRIPT (User speech)
+    if (type === "transcript") {
+      if (appMode === "chat") {
+        hideVoiceWave();
+        storeMessage("user", data.text);
+        addBubble("user", data.text);
+      }
+      return;
+    }
+
+    // RESPONSE (Assistant speech)
+    if (type === "response") {
+      if (appMode === "chat") {
+        hideVoiceWave();
+        storeMessage("assistant", data.text);
+        addBubble("ai", data.text);
+      }
+      return;
+    }
+
+    // ERROR
+    if (type === "error") {
+      console.error("Backend Error:", data.message);
+      // Optionally show a toast
+    }
+
+  } catch (e) {
+    console.log("Error parsing message:", e, raw);
+  }
 });
 
 // journal

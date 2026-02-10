@@ -1,5 +1,5 @@
 import pyaudio
-from config import SAMPLE_RATE, CHANNELS, FRAMES_PER_BUFFER
+from config import SAMPLE_RATE, FRAMES_PER_BUFFER, CHANNELS
 
 def get_mic_stream():
     p = pyaudio.PyAudio()
@@ -10,5 +10,11 @@ def get_mic_stream():
         input=True,
         frames_per_buffer=FRAMES_PER_BUFFER
     )
-    stream.start_stream()
     return p, stream
+
+def release_mic_stream(p, stream):
+    if stream:
+        stream.stop_stream()
+        stream.close()
+    if p:
+        p.terminate()

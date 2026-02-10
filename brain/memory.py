@@ -53,13 +53,17 @@ def parse_time_string(t: str):
 
 # ---------- TODO ----------
 def add_todo(task: str):
+    print(f"DEBUG: add_todo called with: {task}", flush=True)
     data = load_memory()
     data["todos"].append(task)
     save_memory(data)
+    print("DEBUG: add_todo saved", flush=True)
 
 
 def list_todos():
-    return load_memory()["todos"]
+    todos = load_memory()["todos"]
+    print(f"DEBUG: list_todos returning {len(todos)} items", flush=True)
+    return todos
 
 
 # ---------- JOURNAL ----------
@@ -70,6 +74,10 @@ def add_journal(entry: str):
         "time": time.ctime()
     })
     save_memory(data)
+
+
+def list_journal():
+    return load_memory()["journal"]
 
 
 # ---------- REMINDER ----------

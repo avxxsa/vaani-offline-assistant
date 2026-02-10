@@ -2,6 +2,7 @@ import re
 
 def detect_intent(text: str):
     t = text.lower().strip()
+    print(f"DEBUG: detect_intent input: '{text}' -> normalized: '{t}'", flush=True)
 
     # NAME
     m = re.search(r"my name is (.+)", t)
@@ -33,15 +34,20 @@ def detect_intent(text: str):
         return "add_reminder", m.group(1), m.group(2)
 
     # TODO
-    if t.startswith("add task"):
-        return "add_todo", t.replace("add task", "").strip(), None
+    if t.startswith("add task") or t.startswith("काम थप") or t.startswith("task add"):
+        content = t.replace("add task", "").replace("काम थप", "").replace("task add", "").strip()
+        return "add_todo", content, None
 
-    if "list tasks" in t:
+    if any(p in t for p in ["list tasks", "show tasks", "काम देखाऊ", "लिस्ट देखाऊ"]):
         return "list_todos", None, None
 
     # JOURNAL
-    if t.startswith("note"):
-        return "journal", t.replace("note", "").strip(), None
+    if any(p in t for p in ["read notes", "show notes", "list notes", "show journal", "नोट देखाऊ", "नोट पढ"]):
+        return "list_journal", None, None
+
+    if t.startswith("note") or t.startswith("journal") or t.startswith("नोट"):
+        content = t.replace("note", "").replace("journal", "").replace("नोट", "").strip()
+        return "journal", content, None
 
     # GREET
     if any(w in t for w in ["hi", "hello", "namaste", "नमस्ते"]):

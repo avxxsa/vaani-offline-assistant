@@ -5,6 +5,8 @@ __pycache__/
 *.pyd
 .env
 
+venv/
+
 # IDE
 .idea/
 .vscode/
@@ -18,5 +20,11 @@ vosk-model*/
 .DS_Store
 Thumbs.db
 
+
 # nodemodules
 node_modules/
+npm-debug.log
+yarn-error.log
+
+# Large Models
+wav2vec2-nepali-finetuned/

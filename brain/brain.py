@@ -7,6 +7,7 @@ from brain.memory import (
     add_todo,
     list_todos,
     add_journal,
+    list_journal,
     add_reminder,
     set_profile,
     get_profile,
@@ -44,20 +45,41 @@ def parse_time_string(time_str: str) -> float:
 
 def process_text(text: str) -> str:
     intent, content, time_info = detect_intent(text)
+    print(f"DEBUG: process_text -> Intent: {intent}, Content: {content}, TimeInfo: {time_info}", flush=True)
 
+    # TODOs
     # TODOs
     if intent == "add_todo":
         add_todo(content)
+        if is_nepali(text):
+            return f"काम थपियो: {content}"
         return f"Task added: {content}"
 
     if intent == "list_todos":
         todos = list_todos()
+        if is_nepali(text):
+            return "तपाईंको कामहरू: " + ", ".join(todos) if todos else "कुनै काम छैन।"
         return "Your tasks are: " + ", ".join(todos) if todos else "Todo list is empty."
 
     # Journal
     if intent == "journal":
         add_journal(content)
+        if is_nepali(text):
+            return "जर्नलमा सुरक्षित गरियो।"
         return "Saved to your journal."
+
+    if intent == "list_journal":
+        entries = list_journal()
+        if not entries:
+            if is_nepali(text): return "जर्नल खाली छ।"
+            return "Journal is empty."
+        
+        # Format last 3 entries for brevity
+        recent = entries[-3:]
+        txt = ". ".join([e["text"] for e in recent])
+        if is_nepali(text):
+            return f"भर्खरका नोटहरू: {txt}"
+        return f"Recent notes: {txt}"
 
     # Reminders
     if intent == "set_reminder":

@@ -27,5 +27,9 @@ if USE_FINETUNED:
 else:
     HF_NEPALI_MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "wav2vec2-nepali")
 
+VOSK_MODEL_PATH = None # Removed
+ENGLISH_MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "wav2vec2-large-960h-lv60-self")
+
+
 # Compute
 USE_GPU = False
