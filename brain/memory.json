@@ -1,25 +1,9 @@
 {
   "todos": [
-    "buy milk",
-    "finish assignment",
-    "drink water",
-    "drink water",
-    "buy milk",
-    "assignment",
-    "assignment"
+    "study ai"
   ],
   "journal": [
-    "today was stressful",
-    "today was stressful"
-  ],
-  "reminders": [
-    {
-      "text": "drink water",
-      "time": 1769339700.563379
-    },
-    {
-      "text": "pani khana",
-      "time": "5 pm"
-    }
+    "2026-01-24 13:26 - journal today",
+    "2026-01-24 13:26 - show my journal"
   ]
 }

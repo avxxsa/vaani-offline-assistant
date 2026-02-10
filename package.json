@@ -1,0 +1,24 @@
+{
+  "name": "vaani-offline-assistant",
+  "version": "1.0.0",
+  "description": "Vaani is a fully offline, privacy-first AI voice assistant designed to run on-device without any internet connection. It uses local speech recognition (Vosk), text-to-speech (pyttsx3), and a modular Python architecture to interpret commands and perform tasks such as opening applications, checking time/date, setting reminders, and more.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avxxsa/vaani-offline-assistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/avxxsa/vaani-offline-assistant/issues"
+  },
+  "homepage": "https://github.com/avxxsa/vaani-offline-assistant#readme",
+  "devDependencies": {
+    "electron": "^40.0.0"
+  }
+}

@@ -2,18 +2,18 @@ import numpy as np
 
 
 def frame_rms(audio_i16: np.ndarray) -> float:
-    """Calculate RMS (Root Mean Square) of audio frame"""
+    # Root Mean Square (RMS) of audio frame
     x = audio_i16.astype(np.float32)
     return float((x * x).mean() ** 0.5 + 1e-9)
 
 
 def is_speech(audio_i16: np.ndarray, threshold: float) -> bool:
-    """Simple VAD based on RMS threshold"""
+    # Simple VAD based on RMS threshold
     return frame_rms(audio_i16) >= threshold
 
 
 def spectral_subtraction_simple(audio_i16: np.ndarray, noise_profile: np.ndarray, strength: float = 0.5) -> np.ndarray:
-    """Simple noise reduction using spectral subtraction"""
+    # Simple noise reduction using spectral subtraction
     if noise_profile is None or len(noise_profile) == 0:
         return audio_i16
 
@@ -32,7 +32,7 @@ def spectral_subtraction_simple(audio_i16: np.ndarray, noise_profile: np.ndarray
 
 
 def apply_high_pass_filter(audio_i16: np.ndarray, cutoff_hz: int = 80, sample_rate: int = 16000) -> np.ndarray:
-    """Simple high-pass filter to remove low-frequency rumble/noise"""
+    # Simple high-pass filter to remove low-frequency rumble/noise
     audio_f32 = audio_i16.astype(np.float32)
 
     rc = 1.0 / (2 * np.pi * cutoff_hz)
