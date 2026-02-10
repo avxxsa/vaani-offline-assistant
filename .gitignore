@@ -1,37 +1,20 @@
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-# Virtual Environment
+*.pyc
+*.pyo
+*.pyd
+.env
 venv/
-env/
-ENV/
 
 # IDE
-.vscode/
 .idea/
-*.swp
-*.swo
+.vscode/
+
+# Models & large files
+models/
+vosk-model*/
+*.zip
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Project specific
-*.pyc
-*.pyo
-*.log
-
-# Model files (too large)
-*.bin
-*.pt
-*.pth
-*.ckpt
-
-# Don't ignore data files (we want these)
-!reminders.json
-!todos.json
-!journal.json
