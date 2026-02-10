@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -44,12 +45,18 @@ venv/
 >>>>>>> origin/avipsa/brain-layer
 =======
 # Python
+=======
+
+node_modules/
+venv/
+>>>>>>> origin/pratistha/ui
 __pycache__/
+.env
+
 *.pyc
 *.pyo
 *.pyd
-.env
-venv/
+
 
 # IDE
 .idea/
@@ -63,4 +70,10 @@ vosk-model*/
 # OS
 .DS_Store
 Thumbs.db
+<<<<<<< HEAD
 >>>>>>> origin/suprabha/speech-layer
+=======
+
+data/*.db
+
+>>>>>>> origin/pratistha/ui

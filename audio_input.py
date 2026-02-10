@@ -12,7 +12,11 @@ def get_mic_stream():
     )
     stream.start_stream()
 <<<<<<< HEAD
+<<<<<<< HEAD
     return stream
 =======
     return p, stream
 >>>>>>> origin/suprabha/speech-layer
+=======
+    return p, stream
+>>>>>>> origin/pratistha/ui

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import subprocess
 
 def speak_text(text: str):
@@ -9,6 +10,8 @@ def speak_text(text: str):
         text
     ])
 =======
+=======
+>>>>>>> origin/pratistha/ui
 import os
 import subprocess
 import tempfile
@@ -169,5 +172,9 @@ class NepaliTTS:
 
 if __name__ == "__main__":
     tts = NepaliTTS()
+<<<<<<< HEAD
     tts.speak("नमस्ते म वाणी हुँ म तपाईंलाई कसरी सहयोग गर्न सक्छु आज मौसम कस्तो छ धन्यवाद फेरि भेटौँला")
 >>>>>>> origin/suprabha/speech-layer
+=======
+    tts.speak("नमस्ते म वाणी हुँ म तपाईंलाई कसरी सहयोग गर्न सक्छु आज मौसम कस्तो छ धन्यवाद फेरि भेटौँला")
+>>>>>>> origin/pratistha/ui

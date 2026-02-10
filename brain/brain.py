@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from brain.intents import detect_intent
 from brain.memory import add_todo, list_todos, add_journal, add_reminder, set_profile, get_profile
 import time
@@ -90,6 +91,8 @@ def process_text(text: str) -> str:
 def is_nepali(text):
     return any("अ" <= c <= "ह" for c in text)
 =======
+=======
+>>>>>>> origin/pratistha/ui
 from brain.memory import add_todo, get_todos, add_journal
 from datetime import datetime
 
@@ -123,5 +126,9 @@ def process_text(text):
         return datetime.now().strftime("Current time is %H:%M")
 
     # FALLBACK
+<<<<<<< HEAD
     return "I understood you, but I don't know how to help with that yet."
 >>>>>>> origin/suprabha/speech-layer
+=======
+    return "I understood you, but I don't know how to help with that yet."
+>>>>>>> origin/pratistha/ui

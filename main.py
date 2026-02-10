@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
@@ -28,6 +29,8 @@ class VaaniApp(App):
 
 VaaniApp().run()
 =======
+=======
+>>>>>>> origin/pratistha/ui
 import os
 import numpy as np
 
@@ -234,5 +237,9 @@ def main():
 
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     main()
 >>>>>>> origin/suprabha/speech-layer
+=======
+    main()
+>>>>>>> origin/pratistha/ui

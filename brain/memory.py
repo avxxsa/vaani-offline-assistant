@@ -1,14 +1,18 @@
 import json
 import os
 <<<<<<< HEAD
+<<<<<<< HEAD
 import time
 from datetime import datetime
+=======
+>>>>>>> origin/pratistha/ui
 
 MEMORY_FILE = "brain/memory.json"
 
 # ---------- CORE ----------
 def load_memory():
     if not os.path.exists(MEMORY_FILE):
+<<<<<<< HEAD
         return {"todos": [], "journal": [], "reminders": [], "profile": {}}
 
     with open(MEMORY_FILE, "r", encoding="utf-8") as f:
@@ -120,6 +124,8 @@ MEMORY_FILE = "brain/memory.json"
 
 def load_memory():
     if not os.path.exists(MEMORY_FILE):
+=======
+>>>>>>> origin/pratistha/ui
         return {"todos": [], "journal": []}
     with open(MEMORY_FILE, "r") as f:
         return json.load(f)
@@ -142,5 +148,9 @@ def add_journal(entry):
     save_memory(memory)
 
 def get_journal():
+<<<<<<< HEAD
     return load_memory()["journal"]
 >>>>>>> origin/suprabha/speech-layer
+=======
+    return load_memory()["journal"]
+>>>>>>> origin/pratistha/ui
