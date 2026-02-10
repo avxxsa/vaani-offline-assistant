@@ -18,7 +18,18 @@ MIN_SPEECH_DURATION_SEC = 0.3
 
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+<<<<<<< HEAD
 HF_NEPALI_MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "wav2vec2-nepali")
+=======
+
+# Toggle which model to use
+USE_FINETUNED = True   # True = your fine-tuned model, False = base model
+
+if USE_FINETUNED:
+    HF_NEPALI_MODEL_PATH = os.path.join(PROJECT_ROOT, "wav2vec2-nepali-finetuned")
+else:
+    HF_NEPALI_MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "wav2vec2-nepali")
+>>>>>>> origin/suprabha/speech-layer
 
 # Compute
 USE_GPU = False

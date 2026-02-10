@@ -11,4 +11,8 @@ def get_mic_stream():
         frames_per_buffer=FRAMES_PER_BUFFER
     )
     stream.start_stream()
+<<<<<<< HEAD
     return stream
+=======
+    return p, stream
+>>>>>>> origin/suprabha/speech-layer

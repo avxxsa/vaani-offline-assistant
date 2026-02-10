@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -41,3 +42,25 @@ __pycache__/
 *.pyc
 venv/
 >>>>>>> origin/avipsa/brain-layer
+=======
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Models & large files
+models/
+vosk-model*/
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+>>>>>>> origin/suprabha/speech-layer

@@ -1,8 +1,12 @@
-import re
-
 def detect_intent(text: str) -> str:
     text = text.lower().strip()
 
+<<<<<<< HEAD
+def detect_intent(text: str) -> str:
+    text = text.lower().strip()
+
+=======
+>>>>>>> origin/suprabha/speech-layer
     if text in ["hi", "hello", "hey"]:
         return "greet"
 

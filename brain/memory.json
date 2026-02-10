@@ -1,5 +1,6 @@
 {
   "todos": [
+<<<<<<< HEAD
     "buy milk",
     "finish assignment",
     "drink water",
@@ -55,4 +56,12 @@
     "name": "avipsa",
     "fact": "a cs student"
   }
+=======
+    "study ai"
+  ],
+  "journal": [
+    "2026-01-24 13:26 - journal today",
+    "2026-01-24 13:26 - show my journal"
+  ]
+>>>>>>> origin/suprabha/speech-layer
 }

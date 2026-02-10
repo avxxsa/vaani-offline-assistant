@@ -2,18 +2,30 @@ import numpy as np
 
 
 def frame_rms(audio_i16: np.ndarray) -> float:
+<<<<<<< HEAD
     """Calculate RMS (Root Mean Square) of audio frame"""
+=======
+    # Root Mean Square (RMS) of audio frame
+>>>>>>> origin/suprabha/speech-layer
     x = audio_i16.astype(np.float32)
     return float((x * x).mean() ** 0.5 + 1e-9)
 
 
 def is_speech(audio_i16: np.ndarray, threshold: float) -> bool:
+<<<<<<< HEAD
     """Simple VAD based on RMS threshold"""
+=======
+    # Simple VAD based on RMS threshold
+>>>>>>> origin/suprabha/speech-layer
     return frame_rms(audio_i16) >= threshold
 
 
 def spectral_subtraction_simple(audio_i16: np.ndarray, noise_profile: np.ndarray, strength: float = 0.5) -> np.ndarray:
+<<<<<<< HEAD
     """Simple noise reduction using spectral subtraction"""
+=======
+    # Simple noise reduction using spectral subtraction
+>>>>>>> origin/suprabha/speech-layer
     if noise_profile is None or len(noise_profile) == 0:
         return audio_i16
 
@@ -32,7 +44,11 @@ def spectral_subtraction_simple(audio_i16: np.ndarray, noise_profile: np.ndarray
 
 
 def apply_high_pass_filter(audio_i16: np.ndarray, cutoff_hz: int = 80, sample_rate: int = 16000) -> np.ndarray:
+<<<<<<< HEAD
     """Simple high-pass filter to remove low-frequency rumble/noise"""
+=======
+    # Simple high-pass filter to remove low-frequency rumble/noise
+>>>>>>> origin/suprabha/speech-layer
     audio_f32 = audio_i16.astype(np.float32)
 
     rc = 1.0 / (2 * np.pi * cutoff_hz)
