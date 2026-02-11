@@ -1,21 +1,32 @@
 .journal-page {
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 80px 20px;
+  background: #f6f4fb;
+  min-height: calc(100vh - 56px);
+
 }
 
-.journal-header h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #c4b5fd;
+.journal-header {
+  text-align: center;
+  margin-bottom: 60px; 
 }
+
+
+
+.journal-header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #7c6ac7;
+}
+
 
 .journal-header p {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: var(--text-muted);
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #9a8fd1;
 }
+
 
 .journal-list {
   display: flex;
@@ -24,10 +35,22 @@
 }
 
 .journal-entry {
-  background: rgba(255,255,255,0.05);
-  border-radius: 14px;
-  padding: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(139,92,246,0.15),
+    rgba(255,255,255,0.05)
+  );
+  border: 1px solid rgba(139,92,246,0.25);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.journal-entry:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+
 
 .journal-entry .time {
   font-size: 11px;
@@ -35,10 +58,10 @@
   margin-bottom: 6px;
 }
 
-.journal-entry .text {
-  font-size: 14px;
-  line-height: 1.5;
+.journal-entry {
+  padding: 10px;
 }
+
 
 .journal-back-btn {
   background: none;
@@ -53,3 +76,53 @@
 .journal-back-btn:hover {
   text-decoration: underline;
 }
+
+.journal-window {
+  background: #f3f0f7;
+  border-radius: 18px;
+  border: 4px solid #b7a6d8;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.window-body {
+  padding: 20px;
+  color: #4b3f5f;
+}
+
+.window-body .text {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.window-body .time {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.window-header {
+  padding: 14px 16px 8px 16px;
+  position: relative;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  background: #b7a6d8;
+  border-radius: 50%;
+}
+
+.header-line {
+  height: 3px;
+  background: #b7a6d8;
+  border-radius: 4px;
+}
+

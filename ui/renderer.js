@@ -37,7 +37,7 @@ function updateTopbarButton() {
   if (!openJournalBtn || !openTodoBtn) return;
 
   if (appMode === "chat") {
-    openJournalBtn.textContent = "📓 Journal";
+    openJournalBtn.textContent = "Journal";
     openJournalBtn.style.display = "inline-flex";
     openTodoBtn.style.display = "inline-flex";
   }
@@ -49,7 +49,7 @@ function updateTopbarButton() {
   }
 }
 
-//page loader
+//page loader 
 function loadPage(page) {
   return fetch(`./pages/${page}.html`)
     .then(res => res.text())
@@ -61,35 +61,38 @@ function loadPage(page) {
       voiceWave = document.getElementById("voiceWave");
       waveText = document.getElementById("waveText");
 
-      // Sidebar control
-       if (page === "chat") {
+      // Sidebar + Layout control
+
+      if (page === "chat") {
+        document.body.classList.remove("journal-mode");
         sidebar?.classList.remove("hidden");
-        appRoot?.classList.remove("clean-mode");
+        appRoot?.classList.remove("clean-mode");   // keep this
         renderChat();
-      } else {
-        sidebar?.classList.add("hidden");
-        appRoot?.classList.add("clean-mode");
       }
 
-        if (page === "todo") {
-      sidebar?.classList.add("hidden");
-      window.renderTodos?.();
+      if (page === "todo") {
+        document.body.classList.remove("journal-mode");  // 🔥 ADD THIS
+        sidebar?.classList.add("hidden");
+        appRoot?.classList.add("clean-mode");            // 🔥 ADD THIS
+        window.renderTodos?.();
 
-      // Load todo script dynamically
-      const script = document.createElement("script");
-      script.src = "./scripts/todo.js";
-      script.defer = true;
-      document.body.appendChild(script);
-    }
+        // Load todo script dynamically
+        const script = document.createElement("script");
+        script.src = "./scripts/todo.js";
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+
       if (page === "journal") {
-       sidebar?.classList.add("hidden");
-       window.renderJournal?.();
-}
+        document.body.classList.add("journal-mode");
+        sidebar?.classList.add("hidden");
+        appRoot?.classList.add("clean-mode");     // 🔥 THIS WAS MISSING
+        window.renderJournal?.();
+      }
 
     });
-
-    
 }
+
 
 //chat
 

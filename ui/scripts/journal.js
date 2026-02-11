@@ -25,9 +25,23 @@ function renderJournal() {
     div.className = "journal-entry";
 
     div.innerHTML = `
-      <div class="time">${entry.time}</div>
+  <div class="journal-window">
+    <div class="window-header">
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="header-line"></div>
+    </div>
+
+    <div class="window-body">
       <div class="text">${entry.text}</div>
-    `;
+      <div class="time">${entry.time}</div>
+    </div>
+  </div>
+`;
+
 
     list.appendChild(div);
   });
