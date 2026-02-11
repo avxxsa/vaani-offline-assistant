@@ -2,7 +2,7 @@ import time
 import re
 from datetime import datetime
 
-from brain.intents import detect_intent
+from brain.quick_nlu import detect_intent
 from brain.memory import (
     add_todo,
     list_todos,
@@ -82,7 +82,7 @@ def process_text(text: str) -> str:
         return f"Recent notes: {txt}"
 
     # Reminders
-    if intent == "set_reminder":
+    if intent == "add_reminder":
         # Expect detect_intent to provide (task, time_str) in either content or time_info
         # Common patterns: content=(task, time_str) OR content=task, time_info=time_str
         task = None
