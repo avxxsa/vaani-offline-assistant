@@ -26,9 +26,7 @@ from stt_nepali_hf_local import NepaliSTT
 from tts_espeaking import NepaliTTS
 
 
-# -----------------------------
 # GUI (Kivy) - Text Mode
-# -----------------------------
 class VaaniApp(App):
     def build(self):
         layout = BoxLayout(orientation="vertical")
@@ -50,9 +48,8 @@ class VaaniApp(App):
         self.output.text = response
 
 
-# -----------------------------
 # Voice Mode Utilities
-# -----------------------------
+
 def calibrate_threshold(stream) -> tuple[float, np.ndarray]:
     noise_frames = []
     num_frames = int((NOISE_PROFILE_SEC * SAMPLE_RATE) / FRAMES_PER_BUFFER)
@@ -129,9 +126,8 @@ def record_utterance(stream, threshold: float, noise_profile: np.ndarray) -> np.
     return utterance
 
 
-# -----------------------------
 # Voice Mode Main
-# -----------------------------
+
 def main_voice():
     if not os.path.isdir(HF_NEPALI_MODEL_PATH):
         print("MODEL NOT FOUND")
@@ -208,9 +204,8 @@ def main_voice():
         print("Done!")
 
 
-# -----------------------------
 # Entry point selector
-# -----------------------------
+
 def run_mode(mode: str = "voice"):
     mode = (mode or "").strip().lower()
     if mode == "gui":
