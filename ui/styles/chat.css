@@ -64,7 +64,7 @@
   }
 }
 
-/* Voice Wave (Chat-only) */
+/* Voice Wave */
 
 .voice-wave {
   position: fixed;
@@ -76,7 +76,13 @@
   background: rgba(18,12,37,0.75);
   backdrop-filter: blur(14px);
   z-index: 999;
+  animation: pulseGlow 2s infinite;
 }
+
+.voice-wave.hidden {
+  display: none !important;
+}
+
 
 .wave-text {
   font-size: 12px;
@@ -87,10 +93,6 @@
 
 .voice-wave.processing .wave-text {
   opacity: 0.6;
-}
-
-.voice-wave.hidden{
-  display: none;
 }
 
 .voice-wave .wave{
@@ -110,3 +112,11 @@
 .voice-wave.processing .wave span{
   opacity: 0.3;
 }
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 20px rgba(139,92,246,0.3); }
+  50% { box-shadow: 0 0 40px rgba(139,92,246,0.6); }
+  100% { box-shadow: 0 0 20px rgba(139,92,246,0.3); }
+}
+
+

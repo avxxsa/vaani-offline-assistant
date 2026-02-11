@@ -189,7 +189,7 @@ html, body {
 
 /* Journal Mode Topbar */
 body.journal-mode .topbar {
-  background: #7c6ac7;   /* lighter purple */
+  background: #7c6ac7;   
   border-bottom: none;
 }
 
@@ -201,3 +201,32 @@ body.journal-mode {
   background: #f6f4fb;
 }
 
+.mode-switch {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  padding: 4px;
+  border-radius: 14px;
+  gap: 4px;
+}
+
+.mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.mode-btn:hover {
+  color: white;
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: white;
+  box-shadow: 0 4px 14px rgba(139,92,246,0.4);
+}
