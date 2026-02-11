@@ -12,24 +12,26 @@ END_SILENCE_SEC = 1.2
 MAX_UTTERANCE_SEC = 15
 
 # Noise reduction settings
-ENABLE_NOISE_REDUCTION = True
+ENABLE_NOISE_REDUCTION = True  # Disabled for speed and quality  
 NOISE_REDUCTION_STRENGTH = 0.5
 MIN_SPEECH_DURATION_SEC = 0.3
+
+# Wake word settings
+ENABLE_WAKE_WORD = True  # Require wake words like 'Vaani', 'Hello Vaani' to activate
+WAKE_WORD_THRESHOLD = 0.5  # Confidence threshold for wake word detection (0.0-1.0)
 
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-# Toggle which model to use
-USE_FINETUNED = True   # True = your fine-tuned model, False = base model
+# STT Model Configuration
+# Using wav2vec2-nepali from HuggingFace (better quality for Nepali)
+HF_NEPALI_MODEL_PATH = "anish-shilpakar/wav2vec2-nepali"  # Nepali-specific wav2vec2 model
 
-if USE_FINETUNED:
-    HF_NEPALI_MODEL_PATH = os.path.join(PROJECT_ROOT, "wav2vec2-nepali-finetuned")
-else:
-    HF_NEPALI_MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "wav2vec2-nepali")
-
-VOSK_MODEL_PATH = None # Removed
-ENGLISH_MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "wav2vec2-large-960h-lv60-self")
-
+# English model 
+ENGLISH_MODEL_PATH = "openai/whisper-tiny"
 
 # Compute
 USE_GPU = False
+
+# TTS Settings
+TTS_ENGINE = "silero"  # "silero" (high quality) or "espeak" (lower quality)

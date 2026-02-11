@@ -2,7 +2,7 @@ import re
 
 def detect_intent(text: str):
     t = text.lower().strip()
-    print(f"DEBUG: detect_intent input: '{text}' -> normalized: '{t}'", flush=True)
+    print(f"DEBUG: detect_intent input length: {len(text)}", flush=True)
 
     # NAME
     m = re.search(r"my name is (.+)", t)
@@ -33,27 +33,32 @@ def detect_intent(text: str):
     if m:
         return "add_reminder", m.group(1), m.group(2)
 
-    # TODO
+    # TODO - List or Show
+    if any(p in t for p in ["list tasks", "show tasks", "काम देखाऊ", "लिस्ट देखाऊ", "my tasks", "show my tasks"]):
+        return "list_todos", None, None
+
+    # TODO - Add
     if t.startswith("add task") or t.startswith("काम थप") or t.startswith("task add"):
         content = t.replace("add task", "").replace("काम थप", "").replace("task add", "").strip()
         return "add_todo", content, None
 
-    if any(p in t for p in ["list tasks", "show tasks", "काम देखाऊ", "लिस्ट देखाऊ"]):
-        return "list_todos", None, None
-
-    # JOURNAL
-    if any(p in t for p in ["read notes", "show notes", "list notes", "show journal", "नोट देखाऊ", "नोट पढ"]):
+    # JOURNAL - List or Show
+    if any(p in t for p in ["read notes", "show notes", "list notes", "show journal", "show journals", "नोट देखाऊ", "नोट पढ", "list journals", "my journals", "show my journals"]):
         return "list_journal", None, None
 
-    if t.startswith("note") or t.startswith("journal") or t.startswith("नोट"):
-        content = t.replace("note", "").replace("journal", "").replace("नोट", "").strip()
+    # JOURNAL - Add entry (including "add journal", "journal add", etc.)
+    if t.startswith("note") or t.startswith("journal") or t.startswith("नोट") or t.startswith("add journal") or t.startswith("add note"):
+        # Extract content - handle various patterns: "journal gara", "journal add gara", "add journal gara", etc.
+        content = re.sub(r"^(add\s+)?(journal|note|नोट)\s+", "", t).strip()
+        content = re.sub(r"^(add\s+)?", "", content).strip()  # Remove any leftover "add " prefix
         return "journal", content, None
 
     # GREET
     if any(w in t for w in ["hi", "hello", "namaste", "नमस्ते"]):
         return "greet", None, None
 
-    return "unknown", None, None
-
+    # HELP
     if "help" in t or "सहायता" in t:
         return "help", None, None
+
+    return "unknown", None, None

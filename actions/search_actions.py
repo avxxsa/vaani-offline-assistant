@@ -103,7 +103,7 @@ def search_in_common_locations(query: str):
     return {
         "success": True,
         "query": query,
-        "results": all_results[:10],  # Limit to 10 results
+        "results": all_results[:10],  
         "count": len(all_results)
     }
 

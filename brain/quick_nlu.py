@@ -86,7 +86,7 @@ clf.fit(X, training_labels)
 # Intent + slot detection
 def detect_intent(text: str):
     t = text.lower().strip()
-    print(f"DEBUG: detect_intent input: '{text}' -> normalized: '{t}'", flush=True)
+    print(f"DEBUG: detect_intent input length: {len(text)}", flush=True)
 
     # First try classifier
     try:
@@ -132,4 +132,4 @@ if __name__ == "__main__":
         "help"
     ]
     for t in tests:
-        print(t, "->", detect_intent(t))
+        print(f"Test (length {len(t)}) -> {detect_intent(t)}")

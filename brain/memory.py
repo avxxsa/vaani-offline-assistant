@@ -21,17 +21,12 @@ def load_memory():
 
     return data
 
-
 def save_memory(data):
     with open(MEMORY_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-
 # ---------- TIME PARSER ----------
 def parse_time_string(t: str):
-    """
-    Converts '5 baje' or '5 pm' into unix timestamp (today)
-    """
     try:
         t = t.replace("baje", "").replace("बजे", "").strip()
 
@@ -50,21 +45,18 @@ def parse_time_string(t: str):
     except:
         return time.time() + 60  # fallback 1 min later
 
-
 # ---------- TODO ----------
 def add_todo(task: str):
-    print(f"DEBUG: add_todo called with: {task}", flush=True)
     data = load_memory()
     data["todos"].append(task)
     save_memory(data)
-    print("DEBUG: add_todo saved", flush=True)
-
 
 def list_todos():
-    todos = load_memory()["todos"]
-    print(f"DEBUG: list_todos returning {len(todos)} items", flush=True)
-    return todos
+    return load_memory()["todos"]
 
+# Optional: keep get_todos for compatibility
+def get_todos():
+    return list_todos()
 
 # ---------- JOURNAL ----------
 def add_journal(entry: str):
@@ -75,10 +67,8 @@ def add_journal(entry: str):
     })
     save_memory(data)
 
-
-def list_journal():
+def get_journal():
     return load_memory()["journal"]
-
 
 # ---------- REMINDER ----------
 def add_reminder(text: str, remind_time: str):
@@ -91,7 +81,6 @@ def add_reminder(text: str, remind_time: str):
     })
     save_memory(data)
 
-
 def get_due_reminders():
     data = load_memory()
     now = time.time()
@@ -102,17 +91,16 @@ def get_due_reminders():
     save_memory(data)
     return due
 
-
 # ---------- PROFILE ----------
 def set_profile(key, value):
     data = load_memory()
     data["profile"][key] = value
     save_memory(data)
 
-
 def get_profile(key):
     return load_memory().get("profile", {}).get(key)
 
+# ---------- LAST INTENT ----------
 last_intent = None
 
 def set_last_intent(i):

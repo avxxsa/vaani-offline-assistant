@@ -1,41 +1,43 @@
-// dummy data 
-
-const dummyTodos = [
-  "Finish UI for Vaani",
-  "Prepare project logsheet",
-  "Review renderer.js",
-  "OS lab report",
-  "study for compart",
-  "cry",
-  "huhuhu",
-  "Prepare viva explanation"
-];
-
-function renderTodos() {
+// Load todos from backend
+async function renderTodos() {
   const leftCol = document.getElementById("todoLeft");
   const rightCol = document.getElementById("todoRight");
 
   if (!leftCol || !rightCol) return;
 
-  leftCol.innerHTML = "";
+  leftCol.innerHTML = "<p style='text-align: center; color: rgba(255,255,255,0.5);'>Loading...</p>";
   rightCol.innerHTML = "";
 
-  dummyTodos.forEach((task, index) => {
-  const item = document.createElement("div");
-  item.className = "todo-item";
+  try {
+    const todos = await window.vaani.requestData("todos");
+    
+    leftCol.innerHTML = "";
+    rightCol.innerHTML = "";
 
-  item.innerHTML = `
-    <span class="checkbox"></span>
-    <span class="line">${task}</span>
-  `;
+    if (!todos || todos.length === 0) {
+      leftCol.innerHTML = "<p style='text-align: center; color: rgba(255,255,255,0.5);'>No todos yet!</p>";
+      return;
+    }
 
-  item.addEventListener("click", () => {
-    item.classList.toggle("completed");
-  });
+    todos.forEach((task, index) => {
+      const item = document.createElement("div");
+      item.className = "todo-item";
 
-  (index % 2 === 0 ? leftCol : rightCol).appendChild(item);
-});
+      item.innerHTML = `
+        <span class="checkbox"></span>
+        <span class="line">${task}</span>
+      `;
 
+      item.addEventListener("click", () => {
+        item.classList.toggle("completed");
+      });
+
+      (index % 2 === 0 ? leftCol : rightCol).appendChild(item);
+    });
+  } catch (e) {
+    console.error("Error loading todos:", e);
+    leftCol.innerHTML = "<p style='text-align: center; color: red;'>Error loading todos</p>";
+  }
 }
 
 window.renderTodos = renderTodos;

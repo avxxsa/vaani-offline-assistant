@@ -5,7 +5,7 @@ import os
 
 def get_platform():
     """Detect the operating system"""
-    return platform.system()  # Returns 'Windows', 'Linux', or 'Darwin' (macOS)
+    return platform.system()  
 
 def open_application(app_name: str):
     """

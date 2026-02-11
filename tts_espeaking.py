@@ -1,24 +1,32 @@
 import os
 import subprocess
 import tempfile
-import winsound
 import re
 import wave
 import array
+import shutil
+import threading
+
+# Optional: winsound only exists on Windows
+try:
+    import winsound
+except ImportError:
+    winsound = None
+
+from nepali_transliterate import transliterate_nepali_to_latin, is_nepali_text
 
 
 class NepaliTTS:
-
     def __init__(
         self,
-        exe_path=r"C:\Program Files\eSpeak NG\espeak-ng.exe",
-        voice="ne+f4",       
-        speed=150,          
-        volume=170,         
-        pitch=100,          
-        gap=8,               
+        exe_path="espeak-ng",
+        voice="ne",
+        speed=110,  # Slower for natural speech (was 150)
+        volume=200,  # Slightly louder (was 170)
+        pitch=60,    # Lower pitch for more natural tone (was 100)
+        gap=12,      # More gap between words (was 8)
         smooth=True,
-        smooth_strength=0.25 
+        smooth_strength=0.25
     ):
         self.exe = exe_path
         self.voice = voice
@@ -28,143 +36,135 @@ class NepaliTTS:
         self.gap = gap
         self.smooth = smooth
         self.smooth_strength = float(smooth_strength)
-
-    def _auto_pause(self, t: str) -> str:
+        self.playback_thread = None  # Track playback thread
         
-        words = t.split()
-        if len(words) <= 4:
-            return t
+        # Check if espeak-ng exists
+        self.available = shutil.which(self.exe) is not None
+        if not self.available:
+            print(f"WARNING: {self.exe} not found. TTS will be disabled.", flush=True)
 
-        out = []
-        chunk = 0
-        for w in words:
-            out.append(w)
-            chunk += 1
-           
-            if chunk >= 7:
-                out.append("।")
-                chunk = 0
-
-        return " ".join(out)
-
+    def add_prosody_hints(self, text: str) -> str:
+        """
+        Add prosody hints to text for more natural speech.
+        Breaks long sentences and adds emphasis markers.
+        """
+        # Add comma pauses for sentence structure
+        text = text.replace('।', ',')  # Nepali danda -> comma for pause
+        # Add subtle pauses after punctuation
+        text = re.sub(r'([!?।\.,])', r'\1 ', text)
+        return text
+    
     def preprocess_text(self, text: str) -> str:
         t = (text or "").strip()
         if not t:
             return ""
-
-        t = t.replace("VAANI", "वाणी").replace("vaani", "वाणी").replace("Vaani", "वाणी")
-        t = re.sub(r"[^\u0900-\u097F a-zA-Z0-9।,?\s]+", " ", t)
-        t = re.sub(r"\s+", " ", t).strip()
-        t = self._auto_pause(t)
-
+        # Normalize whitespace
+        t = re.sub(r"\s+", " ", t)
+        # Add prosody hints for natural speech
+        t = self.add_prosody_hints(t)
         return t
-
-    def _soft_filter_wav_inplace(self, wav_path: str) -> None:
     
-        if not self.smooth:
+    def _play_audio_async(self, wav_path: str):
+        """Play audio file in background thread (non-blocking)"""
+        try:
+            print(f"DEBUG: Playing audio from {wav_path}...", flush=True)
+            if winsound is not None:
+                winsound.PlaySound(wav_path, winsound.SND_FILENAME)
+                print(f"DEBUG: Audio playback complete", flush=True)
+        except Exception as e:
+            print(f"ERROR: Audio playback failed: {e}", flush=True)
+
+    def speak(self, text: str, force_voice: str = None):
+        if not self.available:
+            print(f"[SPEAK] ({len(text)} chars)", flush=True)
             return
         
-        a = max(0.0, min(0.35, self.smooth_strength))
-        if a <= 0:
+        text = self.preprocess_text(text)
+        if not text:
             return
-
-        try:
-            with wave.open(wav_path, "rb") as wf:
-                params = wf.getparams()
-                frames = wf.readframes(params.nframes)
-
             
-            if params.sampwidth != 2 or params.nchannels != 1:
-                return
-
-            samples = array.array("h")
-            samples.frombytes(frames)
-
-            # Two-pass smoothing for better results
-            y = 0.0
-            for i in range(len(samples)):
-                x = float(samples[i])
-                y = y + a * (x - y)
-                samples[i] = int(max(-32768, min(32767, y)))
-
-            y = 0.0
-            for i in range(len(samples) - 1, -1, -1):
-                x = float(samples[i])
-                y = y + a * (x - y)
-                samples[i] = int(max(-32768, min(32767, y)))
-
-            with wave.open(wav_path, "wb") as wf:
-                wf.setparams(params)
-                wf.writeframes(samples.tobytes())
-
-        except Exception:
-            return
-
-    def speak_to_wav(self, text: str, wav_path: str) -> bool:
-        t = self.preprocess_text(text)
-        if not t:
-            return False
-
-        cmd = [
-            self.exe,
-            "-v", self.voice,
-            "-a", str(self.volume),
-            "-s", str(self.speed),
-            "-p", str(self.pitch),
-            "-g", str(self.gap),
-            "-w", wav_path,
-            "--stdin",
-        ]
-
         try:
-            proc = subprocess.run(
-                cmd,
-                input=(t + "\n").encode("utf-8"),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                check=False,
-                timeout=20,
-            )
-
-            if proc.returncode != 0:
-                return False
-            if not os.path.exists(wav_path) or os.path.getsize(wav_path) < 1000:
-                return False
-
-            self._soft_filter_wav_inplace(wav_path)
-            return True
-
+            # Detect language and select appropriate voice
+            voice_to_use = force_voice or self.voice
+            
+            if is_nepali_text(text):
+                # Use Nepali voice for Nepali text (no transliteration needed)
+                voice_to_use = "ne"
+                print(f"DEBUG: Speaking Nepali text with voice 'ne'", flush=True)
+            else:
+                # Use English voice for English text
+                voice_to_use = "en"
+            
+            print(f"DEBUG: TTS Speaking in voice '{voice_to_use}': {len(text)} chars", flush=True)
+            
+            # On Windows, use winsound to play audio
+            if winsound is not None:
+                # Generate unique WAV path to avoid race conditions with concurrent calls
+                import uuid
+                wav_filename = f"vaani_tts_{uuid.uuid4().hex[:8]}.wav"
+                wav_path = os.path.join(tempfile.gettempdir(), wav_filename)
+                print(f"DEBUG: Generating WAV at {wav_path}", flush=True)
+                
+                # Build command with appropriate voice and natural speech parameters
+                cmd = [
+                    self.exe,
+                    "-v", voice_to_use,  # Voice: "ne" for Nepali, "en" for English
+                    "-s", str(self.speed),  # Speed (slower = more natural)
+                    "-a", str(self.volume),  # Amplitude/volume
+                    "-p", str(self.pitch),  # Pitch (lower = more natural)
+                    "-g", str(self.gap),  # Gap between words (more = clearer)
+                    "-w", wav_path,  # Output WAV file
+                    text  # Text to speak (transliterated if Nepali)
+                ]
+                
+                print(f"DEBUG: espeak-ng command: {' '.join(cmd[:6])}... ({len(text)} chars)", flush=True)
+                result = subprocess.run(cmd, check=True, timeout=15, capture_output=True, text=True)
+                
+                # Check if WAV file was created
+                if not os.path.exists(wav_path):
+                    print(f"ERROR: WAV file not created at {wav_path}", flush=True)
+                    if result.stderr:
+                        print(f"STDERR: {result.stderr}", flush=True)
+                    return
+                
+                wav_size = os.path.getsize(wav_path)
+                if wav_size == 0:
+                    print(f"ERROR: WAV file is empty", flush=True)
+                    if result.stderr:
+                        print(f"STDERR: {result.stderr}", flush=True)
+                    return
+                
+                print(f"DEBUG: WAV created successfully ({wav_size} bytes)", flush=True)
+                
+                # Play audio asynchronously in background thread to avoid freezing
+                self.playback_thread = threading.Thread(
+                    target=self._play_audio_async,
+                    args=(wav_path,),
+                    daemon=True
+                )
+                self.playback_thread.start()
+                print(f"DEBUG: Audio playback started in background thread", flush=True)
+            else:
+                # Fallback: use subprocess directly (non-Windows)
+                print(f"DEBUG: Using subprocess for TTS (non-Windows)", flush=True)
+                subprocess.run([
+                    self.exe,
+                    "-v", self.voice,
+                    "-s", str(self.speed),
+                    text
+                ], check=True, timeout=15)
+                
         except Exception as e:
-            print(f"TTS generation error: {e}")
-            return False
-
-    def speak(self, text: str):
-        wav_path = os.path.join(tempfile.gettempdir(), "vaani_tts.wav")
-
-        ok = self.speak_to_wav(text, wav_path)
-        if not ok:
-            print("TTS failed (WAV not generated).")
-            return
-
-        try:
-            winsound.PlaySound(wav_path, winsound.SND_FILENAME)
-        finally:
-            try:
-                if os.path.exists(wav_path):
-                    os.remove(wav_path)
-            except Exception:
-                pass
+            print(f"TTS error: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
 
 
-if __name__ == "__main__":
-    tts = NepaliTTS()
-    tts.speak("नमस्ते म वाणी हुँ म तपाईंलाई कसरी सहयोग गर्न सक्छु आज मौसम कस्तो छ धन्यवाद फेरि भेटौँला")
-import subprocess
+
+# ✅ COMPATIBILITY FUNCTION
+# This keeps your existing code working
+_tts = NepaliTTS()
 
 def speak_text(text: str):
     print("🔊 Speaking:", text)
-    subprocess.run([
-        "espeak-ng",
-        "-v", "ne",
-        text
-    ])
+    _tts.speak(text)

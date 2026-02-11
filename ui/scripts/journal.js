@@ -1,36 +1,39 @@
-// Dummy journal entries
-const dummyJournalEntries = [
-  {
-    text: "Today felt productive. I finally finished the UI work.",
-    time: "Feb 3,2026 · 10:12 PM"
-  },
-  {
-    text: "Worked on separating frontend and backend. Learned a lot.",
-    time: "Feb 6, 2026 · 9:40 PM"
-  },
-  {
-    text: "The to-do list UI is finally coming together nicely.",
-    time: "Feb 6, 2026 · 8:55 PM"
-  }
-];
-
-function renderJournal() {
+// Load journal entries from backend
+async function renderJournal() {
   const list = document.getElementById("journalList");
   if (!list) return;
 
-  list.innerHTML = "";
+  list.innerHTML = "<p style='text-align: center; color: rgba(255,255,255,0.5); padding: 20px;'>Loading journal...</p>";
 
-  dummyJournalEntries.forEach(entry => {
-    const div = document.createElement("div");
-    div.className = "journal-entry";
+  try {
+    const entries = await window.vaani.requestData("journal");
+    
+    list.innerHTML = "";
 
-    div.innerHTML = `
-      <div class="time">${entry.time}</div>
-      <div class="text">${entry.text}</div>
-    `;
+    if (!entries || entries.length === 0) {
+      list.innerHTML = "<p style='text-align: center; color: rgba(255,255,255,0.5); padding: 20px;'>No journal entries yet. Start speaking!</p>";
+      return;
+    }
 
-    list.appendChild(div);
-  });
+    entries.forEach(entry => {
+      const div = document.createElement("div");
+      div.className = "journal-entry";
+
+      // Handle both old string format and new object format
+      const text = typeof entry === "string" ? entry : entry.text || "";
+      const time = typeof entry === "string" ? "Unknown" : entry.time || "Unknown";
+
+      div.innerHTML = `
+        <div class="time">${time}</div>
+        <div class="text">${text}</div>
+      `;
+
+      list.appendChild(div);
+    });
+  } catch (e) {
+    console.error("Error loading journal:", e);
+    list.innerHTML = "<p style='text-align: center; color: red; padding: 20px;'>Error loading journal</p>";
+  }
 }
 
 window.renderJournal = renderJournal;

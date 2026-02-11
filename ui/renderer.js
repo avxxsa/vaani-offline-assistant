@@ -316,10 +316,128 @@ openTodoBtn?.addEventListener("click", () => {
   updateTopbarButton();
 });
 
+// Chat input handlers
+function setupChatInputHandlers() {
+  const textInput = document.getElementById("textInput");
+  const sendBtn = document.getElementById("sendBtn");
+  const micBtn = document.getElementById("micBtn");
+  const micStatus = document.getElementById("micStatus");
+  
+  if (!textInput || !sendBtn || !micBtn) return;
+
+  // Send text message
+  function sendMessage() {
+    const text = textInput.value.trim();
+    if (!text) return;
+
+    textInput.value = "";
+    addBubble("user", text);
+    storeMessage("user", text);
+    
+    // Send to Python backend
+    window.vaani.sendUserText(text);
+  }
+
+  // Send button click
+  sendBtn.addEventListener("click", sendMessage);
+
+  // Enter key to send
+  textInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Mic button - press and hold
+  let isHolding = false;
+  let holdStartTime = 0;
+  let autoReleaseTimer = null;
+  const MAX_HOLD_DURATION = 5000; // 5 seconds max
+
+  micBtn.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    isHolding = true;
+    holdStartTime = Date.now();
+    micBtn.classList.add("listening");
+    micStatus.textContent = "Listening (5s max)...";
+    
+    // Notify backend to start listening
+    window.vaani.startListening?.();
+    
+    // Auto-release after max duration
+    autoReleaseTimer = setTimeout(() => {
+      if (isHolding) {
+        isHolding = false;
+        micBtn.classList.remove("listening");
+        micStatus.textContent = "Recording stopped";
+        window.vaani.stopListening?.();
+      }
+    }, MAX_HOLD_DURATION);
+  });
+
+  micBtn.addEventListener("mouseup", (e) => {
+    e.preventDefault();
+    if (autoReleaseTimer) {
+      clearTimeout(autoReleaseTimer);
+      autoReleaseTimer = null;
+    }
+    
+    if (isHolding) {
+      isHolding = false;
+      const holdDuration = Date.now() - holdStartTime;
+      micBtn.classList.remove("listening");
+      micStatus.textContent = holdDuration < 500 ? "Too short" : "";
+      
+      // Notify backend to stop listening
+      window.vaani.stopListening?.();
+    }
+  });
+
+  // Touch support
+  micBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    isHolding = true;
+    holdStartTime = Date.now();
+    micBtn.classList.add("listening");
+    micStatus.textContent = "Listening (5s max)...";
+    
+    window.vaani.startListening?.();
+    
+    // Auto-release after max duration
+    autoReleaseTimer = setTimeout(() => {
+      if (isHolding) {
+        isHolding = false;
+        micBtn.classList.remove("listening");
+        micStatus.textContent = "Recording stopped";
+        window.vaani.stopListening?.();
+      }
+    }, MAX_HOLD_DURATION);
+  });
+
+  micBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    if (autoReleaseTimer) {
+      clearTimeout(autoReleaseTimer);
+      autoReleaseTimer = null;
+    }
+    
+    if (isHolding) {
+      isHolding = false;
+      const holdDuration = Date.now() - holdStartTime;
+      micBtn.classList.remove("listening");
+      micStatus.textContent = holdDuration < 500 ? "Too short" : "";
+      
+      window.vaani.stopListening?.();
+    }
+  });
+}
 
 
 loadPage("chat").then(() => {
   newChat();
   updateTopbarButton();
+  // Setup chat input after page loads
+  setTimeout(() => setupChatInputHandlers(), 100);
 });
 

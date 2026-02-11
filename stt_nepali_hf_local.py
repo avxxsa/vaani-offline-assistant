@@ -10,9 +10,11 @@ class NepaliSTT:
     def __init__(self):
         self.device = "cuda" if (USE_GPU and torch.cuda.is_available()) else "cpu"
         print(f"Loading STT model on device: {self.device}")
+        print(f"Model: {HF_NEPALI_MODEL_PATH}", flush=True)
         self.processor = AutoProcessor.from_pretrained(HF_NEPALI_MODEL_PATH)
         self.model = AutoModelForCTC.from_pretrained(HF_NEPALI_MODEL_PATH).to(self.device)
         self.model.eval()
+        print("STT ready", flush=True)
 
     def normalize_audio(self, audio_f32: np.ndarray) -> np.ndarray:
         """Normalize audio to [-1, 1] range"""
@@ -49,6 +51,7 @@ class NepaliSTT:
             return ""
 
         try:
+            print("Starting transcription...", flush=True)
             inputs = self.processor(
                 audio_f32,
                 sampling_rate=SAMPLE_RATE,
@@ -64,9 +67,15 @@ class NepaliSTT:
             text = (text or "").strip()
             text = text.replace("[UNK]", "")
             text = text.replace("  ", " ")
-
+            
+            print(f"Transcription result: {len(text)} chars", flush=True)
             return text
 
         except Exception as e:
-            print(f"Transcription error: {e}")
+            print(f"Transcription error: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
+            return ""
+
+
             return ""

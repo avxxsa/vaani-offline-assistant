@@ -7,38 +7,49 @@
     "buy milk",
     "assignment",
     "assignment",
-    "assignment"
+    "assignment",
+    "study ai"
   ],
   "journal": [
     "today was stressful",
     "today was stressful",
+    "2026-01-24 13:26 - journal today",
+    "2026-01-24 13:26 - show my journal",
     {
-      "text": "",
-      "time": "Wed Feb 11 00:44:37 2026"
+      "text": "2026-02-11 15:42 - can you add journal",
+      "time": "Wed Feb 11 15:42:39 2026"
     },
     {
-      "text": "मन खुशी भएचुपलाग",
-      "time": "Wed Feb 11 00:45:02 2026"
+      "text": "2026-02-11 15:45 - add journal entry",
+      "time": "Wed Feb 11 15:45:00 2026"
     },
     {
-      "text": "तैखियाउ",
-      "time": "Wed Feb 11 00:45:12 2026"
+      "text": "2026-02-11 15:45 - add journal entry testing model",
+      "time": "Wed Feb 11 15:45:22 2026"
     },
     {
-      "text": "म खुशी भाए",
-      "time": "Wed Feb 11 00:45:46 2026"
+      "text": "i tested this model",
+      "time": "Wed Feb 11 15:50:10 2026"
     },
     {
-      "text": "देखाउ",
-      "time": "Wed Feb 11 00:46:07 2026"
+      "text": "2026-02-11 15:54 - add journal naya testing",
+      "time": "Wed Feb 11 15:54:30 2026"
     },
     {
-      "text": "्स",
-      "time": "Wed Feb 11 00:46:49 2026"
+      "text": "2026-02-11 15:56 - add journal new entry for db",
+      "time": "Wed Feb 11 15:56:00 2026"
     },
     {
-      "text": "देखाउ",
-      "time": "Wed Feb 11 00:47:30 2026"
+      "text": "2026-02-11 15:58 - add journal testingasfas dasda",
+      "time": "Wed Feb 11 15:58:37 2026"
+    },
+    {
+      "text": "adding llm",
+      "time": "Wed Feb 11 17:32:24 2026"
+    },
+    {
+      "text": "added nepali tty",
+      "time": "Wed Feb 11 20:54:33 2026"
     }
   ],
   "reminders": [
@@ -80,7 +91,7 @@
     }
   ],
   "profile": {
-    "name": "avipsa",
+    "name": "aayusha",
     "fact": "a cs student"
   }
 }

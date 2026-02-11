@@ -55,7 +55,18 @@ function createWindow() {
       try {
         // Just forward the raw JSON string to renderer
         // validation happens in renderer or here if needed
-        JSON.parse(line); // simple check
+        const parsed = JSON.parse(line);
+        
+        // Handle data responses specially
+        if (parsed.type === "data_response") {
+          const dataType = parsed.data.type;
+          const event = win._dataRequestEvent;
+          if (event) {
+            event.reply(`data-response-${dataType}`, parsed.data.data);
+            win._dataRequestEvent = null;
+          }
+        }
+        
         win.webContents.send("python-message", line);
       } catch (e) {
         console.log("Python stdout (raw):", line);
@@ -67,22 +78,63 @@ function createWindow() {
     console.error("Python stderr:", data.toString());
   });
 
+  // Handle renderer messages to Python
+  const { ipcMain } = require("electron");
+  
+  ipcMain.on("user-text", (event, text) => {
+    console.log("User text received:", text);
+    try {
+      pythonProcess.stdin.write(JSON.stringify({ command: "text_input", data: text }) + "\n");
+    } catch (e) {
+      console.error("Error sending text to Python:", e);
+    }
+  });
+  
+  ipcMain.on("start-listening", (event) => {
+    console.log("Start listening requested");
+    try {
+      pythonProcess.stdin.write(JSON.stringify({ command: "start_audio" }) + "\n");
+    } catch (e) {
+      console.error("Error sending start-listening to Python:", e);
+    }
+  });
+  
+  ipcMain.on("stop-listening", (event) => {
+    console.log("Stop listening requested");
+    try {
+      pythonProcess.stdin.write(JSON.stringify({ command: "stop_audio" }) + "\n");
+    } catch (e) {
+      console.error("Error sending stop-listening to Python:", e);
+    }
+  });
+  
+  ipcMain.on("request-data", (event, dataType) => {
+    console.log("Data request:", dataType);
+    try {
+      pythonProcess.stdin.write(JSON.stringify({ command: "get_data", data_type: dataType }) + "\n");
+      // Store the event for later response
+      win._dataRequestEvent = event;
+    } catch (e) {
+      console.error("Error requesting data from Python:", e);
+    }
+  });
+
   // Handle app exit
   win.on('closed', () => {
-    // Send stop command just in case
+    // Send shutdown command
     try {
-      pythonProcess.stdin.write(JSON.stringify({ command: "stop" }) + "\n");
+      pythonProcess.stdin.write(JSON.stringify({ command: "shutdown" }) + "\n");
     } catch (e) { }
     pythonProcess.kill();
   });
 
-  // Start the assistant loop
-  // Give it a moment to initialize
-  setTimeout(() => {
-    if (pythonProcess.stdin.writable) {
-      pythonProcess.stdin.write(JSON.stringify({ command: "start" }) + "\n");
-    }
-  }, 2000);
+  // Do NOT auto-start the listener - wait for user to press mic button
+  // Users will trigger recording via startListening() when they hold the mic button
+  // setTimeout(() => {
+  //   if (pythonProcess.stdin.writable) {
+  //     pythonProcess.stdin.write(JSON.stringify({ command: "start" }) + "\n");
+  //   }
+  // }, 2000);
 
 }
 
