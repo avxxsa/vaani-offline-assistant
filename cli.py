@@ -1,6 +1,7 @@
 import numpy as np
 import time
 
+from quick_nlu import detect_intent
 from audio_input import get_mic_stream
 from vad_simple import frame_rms
 from stt_nepali_hf_local import NepaliSTT
